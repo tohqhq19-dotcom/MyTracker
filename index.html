@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hyrox Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --bg: #020617;
+      --bg-elevated: #020617;
+      --bg-card: #020617;
+      --border-subtle: #1f2937;
+      --border-strong: #1e293b;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --muted-soft: #6b7280;
+      --accent: #3b82f6;
+      --accent-dark: #1d4ed8;
+      --accent-darker: #1e3a8a;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.9);
+      --radius-card: 1rem;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at top, #020617 0, #020617 40%, #020617 100%);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      min-height: 100vh;
+    }
+
+    /* ========== HEADER / APP BAR ========== */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(14px);
+      background: rgba(2, 6, 23, 0.9);
+      border-bottom: 1px solid rgba(15, 23, 42, 0.8);
+    }
+
+    .app-bar {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0.85rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .app-title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .app-title {
+      margin: 0;
+      font-size: 1.35rem;
+      font-weight: 650;
+      letter-spacing: 0.02em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .app-pill {
+      font-size: 0.65rem;
+      padding: 0.1rem 0.45rem;
+      border-radius: 999px;
+      border: 1px solid rgba(37, 99, 235, 0.7);
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.15), transparent);
+    }
+
+    header p {
+      margin: 0;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .app-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.78rem;
+      color: var(--muted-soft);
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.18);
+    }
+
+    /* ========== LAYOUT GLOBAL ========== */
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 1rem 1.25rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .muted {
+      font-size: 0.8rem;
+      color: var(--muted-soft);
+    }
+
+    /* ========== CARDS ========== */
+    .card {
+      background: radial-gradient(circle at top left, rgba(46, 16, 101, 0.10), transparent 55%),
+                  radial-gradient(circle at top right, rgba(37, 99, 235, 0.10), transparent 55%),
+                  var(--bg-card);
+      border-radius: var(--radius-card);
+      padding: 1rem 1rem 1.05rem;
+      border: 1px solid var(--border-strong);
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      border-radius: inherit;
+      border: 1px solid rgba(148, 163, 184, 0.02);
+    }
+
+    .card + .card {
+      margin-top: 0.2rem;
+    }
+
+    .card-header-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .section-subtitle {
+      font-size: 0.8rem;
+      color: var(--muted-soft);
+      margin-top: 0.15rem;
+    }
+
+    /* ========== FORMS / INPUTS ========== */
+    .field-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
+    }
+
+    select,
+    input {
+      width: 100%;
+      padding: 0.55rem 0.65rem;
+      border-radius: 0.6rem;
+      border: 1px solid var(--border-subtle);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
+    }
+
+    select::placeholder,
+    input::placeholder {
+      color: #6b7280;
+      font-size: 0.83rem;
+    }
+
+    select:focus,
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
+      background: #020617;
+    }
+
+    .readonly-field {
+      background: rgba(15, 23, 42, 0.7);
+      border-style: dashed;
+      cursor: default;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .col-2 {
+      flex: 1 1 0;
+      min-width: 150px;
+    }
+
+    /* ========== BUTTONS ========== */
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      margin-top: 0.5rem;
+      border-radius: 0.7rem;
+      border: none;
+      background: linear-gradient(135deg, var(--accent-dark), var(--accent-darker));
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      letter-spacing: 0.01em;
+      transition: transform 0.05s ease, filter 0.12s ease, box-shadow 0.15s ease;
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.35);
+    }
+
+    button:hover {
+      filter: brightness(1.05);
+    }
+
+    button:active {
+      transform: translateY(1px) scale(0.99);
+      filter: brightness(0.98);
+      box-shadow: 0 5px 18px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-secondary {
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid var(--border-strong);
+      box-shadow: none;
+    }
+
+    .btn-secondary:hover {
+      filter: brightness(1.05);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.8);
+    }
+
+    .btn-secondary:active {
+      filter: brightness(1.01);
+      transform: translateY(1px);
+    }
+
+    .info-message {
+      margin-top: 0.45rem;
+      font-size: 0.78rem;
+      color: var(--accent);
+    }
+
+    /* ========== BADGES / PILLS ========== */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.85rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(30, 64, 175, 0.7);
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    /* ========== TITRES EXERCICES ========== */
+    h2 {
+      margin: 0.1rem 0 0.15rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .subtitle {
+      font-size: 0.82rem;
+      color: var(--muted-soft);
+      margin-bottom: 0.4rem;
+    }
+
+    /* ========== LISTES / RÉSUMÉS ========== */
+    ul.summary-list {
+      list-style: none;
+      padding-left: 0;
+      margin: 0.35rem 0 0;
+    }
+
+    ul.summary-list li {
+      font-size: 0.84rem;
+      padding: 0.3rem 0;
+      border-bottom: 1px dashed rgba(31, 41, 55, 0.7);
+      display: flex;
+      justify-content: space-between;
+      gap: 0.75rem;
+      align-items: baseline;
+    }
+
+    ul.summary-list li:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    ul.summary-list strong {
+      font-weight: 500;
+    }
+
+    /* ========== KPI DASHBOARD ========== */
+    .kpi-card {
+      padding: 0.8rem 0.9rem;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+
+    .kpi {
+      padding: 0.55rem 0.6rem;
+      border-radius: 0.7rem;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(30, 64, 175, 0.75);
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    .kpi-label {
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted-soft);
+    }
+
+    .kpi-value {
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    /* ========== GRID LAYOUTS ========== */
+    .top-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.9fr);
+      gap: 1rem;
+      align-items: stretch;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    #weekSummaryCard {
+      margin-top: 0.1rem;
+    }
+
+    /* ========== CHART ========== */
+    canvas {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 0.85rem;
+      border: 1px solid rgba(15, 23, 42, 0.9);
+      padding: 0.4rem;
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 900px) {
+      .app-bar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .top-grid,
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .kpi-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      main {
+        padding-inline: 0.8rem;
+      }
+      .kpi-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .card {
+        padding-inline: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="app-bar">
+      <div class="app-title-block">
+        <h1 class="app-title">
+          Hyrox Tracker
+          <span class="app-pill">Programme Upper / Legs + Hyrox</span>
+        </h1>
+        <p>Visualise ton plan, choisis un exercice, encode ta séance et suis la progression de ta charge.</p>
+      </div>
+      <div class="app-meta">
+        <span class="dot"></span>
+        <span>Suivi local (données stockées dans ton navigateur)</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- DASHBOARD GLOBAL -->
+    <section class="card kpi-card">
+      <div class="card-header-title">
+        <div class="section-title">Vue d’ensemble</div>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-label">Séances trackées</div>
+          <div class="kpi-value" id="statsTotalSessions">0</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Exos trackés</div>
+          <div class="kpi-value" id="statsTrackedExercises">0</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Derniers 7 jours</div>
+          <div class="kpi-value" id="statsLast7Days">0</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOP GRID: PLAN + CHOIX SÉANCE/EXO -->
+    <section class="top-grid">
+      <!-- 1) Visualiser ma séance -->
+      <div class="card">
+        <div class="card-header-title">
+          <div>
+            <div class="section-title">Visualiser ma séance</div>
+            <div class="section-subtitle">
+              Récap des exercices prévus, de la charge suggérée et du format de séries / reps.
+            </div>
+          </div>
+        </div>
+
+        <div class="row" style="margin-bottom:0.5rem;">
+          <div class="col-2">
+            <div class="field-label">Séance</div>
+            <select id="planSessionFilter"></select>
+          </div>
+        </div>
+        <div id="planContent" class="muted">
+          <!-- Contenu généré en JS -->
+        </div>
+      </div>
+
+      <!-- 2) Choix séance / exo + bouton résumé semaine -->
+      <div class="card">
+        <div class="card-header-title">
+          <div>
+            <div class="section-title">Sélection de travail</div>
+            <div class="section-subtitle">
+              1) Sélectionne la séance · 2) Choisis l’exercice · 3) Encode ce que tu as fait.
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-2">
+            <div class="field-label">Séance</div>
+            <select id="sessionFilter"></select>
+          </div>
+          <div class="col-2">
+            <div class="field-label">Exercice</div>
+            <select id="exerciseSelect"></select>
+          </div>
+        </div>
+
+        <button id="weekSummaryButton" class="btn-secondary">
+          Afficher le résumé des 7&nbsp;derniers jours
+        </button>
+      </div>
+    </section>
+
+    <!-- Résumé de la semaine -->
+    <section class="card" id="weekSummaryCard" style="display:none;">
+      <div class="card-header-title">
+        <div>
+          <div class="section-title">Résumé de la semaine</div>
+          <div class="section-subtitle" id="weekSummaryInfo">
+            Résumé des 7 derniers jours, par exercice tracké.
+          </div>
+        </div>
+      </div>
+      <div id="weekSummaryContent" class="muted"></div>
+    </section>
+
+    <!-- LAYOUT PRINCIPAL: INFOS EXO + ENCODAGE / GRAPH -->
+    <section class="layout">
+      <!-- 3) Infos exo + plan auto -->
+      <div class="card" id="exerciseInfoCard">
+        <div class="badge" id="exerciseBlock">Séance</div>
+        <h2 id="exerciseName">Exercice</h2>
+        <div class="subtitle">
+          Format prévu : <span id="exerciseDefaultSeries">-</span>
+        </div>
+
+        <div id="nonTrackedNotice" class="muted" style="display:none; margin-top:0.4rem;">
+          Cet exercice n’est pas tracké (échauffement / mobilité / natation).
+        </div>
+
+        <div id="trackedSection">
+          <div class="section-title" style="margin-top:0.4rem;">Semaine passée</div>
+          <div class="row" style="margin-top:0.35rem;">
+            <div class="col-2">
+              <div class="field-label">Charge</div>
+              <div class="pill">
+                <span id="lastWeekWeight">-</span>
+              </div>
+            </div>
+            <div class="col-2">
+              <div class="field-label">Séries / reps</div>
+              <div class="pill">
+                <span id="lastWeekSeries">-</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:0.75rem;">
+            <div class="section-title">Plan auto pour cette semaine</div>
+            <div class="section-subtitle">
+              Basé sur la séance précédente et les paramètres d’évolution.
+            </div>
+            <div class="row" style="margin-top:0.4rem;">
+              <div class="col-2">
+                <div class="field-label">Charge cible</div>
+                <input
+                  type="text"
+                  id="targetWeightInput"
+                  class="readonly-field"
+                  placeholder="calculé automatiquement"
+                  readonly
+                  tabindex="-1"
+                />
+              </div>
+              <div class="col-2">
+                <div class="field-label">Séries / reps cibles</div>
+                <input
+                  type="text"
+                  id="targetSeriesInput"
+                  class="readonly-field"
+                  placeholder="calculé automatiquement"
+                  readonly
+                  tabindex="-1"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4) Encodage de la séance + graphique -->
+      <div class="card" id="sessionCard">
+        <div class="card-header-title">
+          <div>
+            <div class="section-title">Ce que tu as fait</div>
+            <div class="section-subtitle">
+              Encode la charge et les séries / reps réellement réalisées pour ce bloc.
+            </div>
+          </div>
+        </div>
+
+        <div id="nonTrackedInputsNotice" class="muted" style="display:none;">
+          Encodage désactivé pour cet exercice (non tracké).
+        </div>
+
+        <div id="trackedInputs">
+          <div class="row">
+            <div class="col-2">
+              <div class="field-label">Charge réelle</div>
+              <input type="text" id="actualWeightInput" placeholder="ex: 62.5, 2, Pdc..." />
+            </div>
+            <div class="col-2">
+              <div class="field-label">Séries / reps réelles</div>
+              <input type="text" id="actualSeriesInput" placeholder="ex: 4x8" />
+            </div>
+          </div>
+          <button id="saveButton">
+            Enregistrer cette séance
+          </button>
+        </div>
+
+        <div class="info-message" id="infoMessage"></div>
+
+        <div style="margin-top:1rem;">
+          <div class="section-title">Évolution de la charge</div>
+          <p class="muted" id="chartHint" style="margin-top:0.35rem;">
+            Le graphe s’actualise dès qu’au moins une séance trackée avec une charge numérique est encodée.
+          </p>
+          <div style="height:220px; margin-top:0.3rem;">
+            <canvas id="weightChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5) Paramètres d’évolution -->
+    <section class="card">
+      <div class="card-header-title">
+        <div>
+          <div class="section-title">Paramètres d’évolution</div>
+          <div class="section-subtitle">
+            Définit, pour chaque exercice tracké, l’incrément de charge et l’objectif de séries.
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-2">
+          <div class="field-label">Séance</div>
+          <select id="configSessionFilter"></select>
+        </div>
+        <div class="col-2">
+          <div class="field-label">Exercice</div>
+          <select id="configExerciseSelect"></select>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:0.8rem;">
+        <div class="col-2">
+          <div class="field-label">Incrément de charge (par séance)</div>
+          <input type="text" id="incrementKgInput" placeholder="ex: 2.5, 1 (niveau)" />
+        </div>
+        <div class="col-2">
+          <div class="field-label">Objectif séries / reps</div>
+          <input type="text" id="configTargetSeriesInput" placeholder="ex: 4x10" />
+        </div>
+      </div>
+
+      <button id="saveEvolutionConfigButton" style="margin-top:0.7rem;">
+        Enregistrer les paramètres d’évolution
+      </button>
+      <div class="info-message" id="evolutionConfigInfo"></div>
+    </section>
+  </main>
+
+  <script>
+    // =========================
+    // 1. Données du programme
+    // =========================
+
+    const SESSION_UPPER = "Upper + Hyrox light";
+    const SESSION_UPPER_VAR = "Upper variante + Hyrox light";
+    const SESSION_LEGS = "Legs + Natation";
+
+    // unit: "kg", "niveau", "Pdc"
+    // track: true = on tracke la charge et l'exo
+    // initialSeries & initialLoad = valeurs de la "semaine 0"
+    const exercises = [
+      // Upper + Hyrox light
+      { id: "upper-rameur", name: "Rameur", block: SESSION_UPPER, defaultSeries: "5 min", track: false, unit: null, initialSeries: "5 min", initialLoad: null },
+      { id: "upper-mobilite", name: "Mobilité", block: SESSION_UPPER, defaultSeries: "/", track: false, unit: null, initialSeries: "/", initialLoad: null },
+      { id: "upper-pompes", name: "Pompes", block: SESSION_UPPER, defaultSeries: "1x20", track: false, unit: null, initialSeries: "1x20", initialLoad: null },
+
+      { id: "upper-dev-assis", name: "Développé assis", block: SESSION_UPPER, defaultSeries: "4x6", track: true, unit: "kg", initialSeries: "4x6", initialLoad: 20 },
+      { id: "upper-lat-pulldown", name: "Lat pulldown", block: SESSION_UPPER, defaultSeries: "4x6–8", track: true, unit: "kg", initialSeries: "4x8", initialLoad: 40 },
+      { id: "upper-dev-epaules-assis", name: "Développé épaules assis", block: SESSION_UPPER, defaultSeries: "3x8–10", track: true, unit: "kg", initialSeries: "3x8", initialLoad: 10 },
+      { id: "upper-farmer-carry", name: "Farmer Carry", block: SESSION_UPPER, defaultSeries: "30–40 m", track: true, unit: "kg", initialSeries: "30–40 m", initialLoad: 20 },
+      { id: "upper-box-step-up", name: "Box step-up", block: SESSION_UPPER, defaultSeries: "8–10 / jambe", track: true, unit: "kg", initialSeries: "8–10 / jambe", initialLoad: 5 },
+      { id: "upper-med-ball-slams", name: "Med ball slams", block: SESSION_UPPER, defaultSeries: "10–12 reps", track: true, unit: "kg", initialSeries: "10–12 reps", initialLoad: 5 },
+      { id: "upper-skierg", name: "SkiErg", block: SESSION_UPPER, defaultSeries: "250 m tonique", track: true, unit: "niveau", initialSeries: "250 m", initialLoad: 2 },
+      { id: "upper-curl-poulie", name: "Curl poulie", block: SESSION_UPPER, defaultSeries: "2x10–12", track: true, unit: "kg", initialSeries: "2x10–12 reps", initialLoad: 15 },
+      { id: "upper-triceps-poulie", name: "Triceps poulie", block: SESSION_UPPER, defaultSeries: "2x10–12", track: true, unit: "kg", initialSeries: "2x10–12 reps", initialLoad: 15 },
+
+      // Upper variante + Hyrox light
+      { id: "uppervar-rameur", name: "Rameur", block: SESSION_UPPER_VAR, defaultSeries: "5 min", track: false, unit: null, initialSeries: "5 min", initialLoad: null },
+      { id: "uppervar-mobilite", name: "Mobilité", block: SESSION_UPPER_VAR, defaultSeries: "/", track: false, unit: null, initialSeries: "/", initialLoad: null },
+      { id: "uppervar-pompes", name: "Pompes", block: SESSION_UPPER_VAR, defaultSeries: "1x20", track: false, unit: null, initialSeries: "1x20", initialLoad: null },
+
+      { id: "uppervar-dev-incline", name: "Développé incliné haltères", block: SESSION_UPPER_VAR, defaultSeries: "4x8–12", track: true, unit: "kg", initialSeries: "4x8–12", initialLoad: 12 },
+      { id: "uppervar-pec-deck", name: "Pec deck", block: SESSION_UPPER_VAR, defaultSeries: "3x12–15", track: true, unit: "kg", initialSeries: "3x12–15", initialLoad: 10 },
+      { id: "uppervar-row-machine", name: "Row machine", block: SESSION_UPPER_VAR, defaultSeries: "3x8–12", track: true, unit: "kg", initialSeries: "3x8–12", initialLoad: 20 },
+      { id: "uppervar-elev-laterales", name: "Élévations latérales", block: SESSION_UPPER_VAR, defaultSeries: "3x12–20", track: true, unit: "kg", initialSeries: "3x12–20", initialLoad: 5 },
+      { id: "uppervar-rameur-250", name: "Rameur 250 m", block: SESSION_UPPER_VAR, defaultSeries: "250 m", track: true, unit: "niveau", initialSeries: "250 m", initialLoad: 2 },
+      { id: "uppervar-walking-lunges", name: "Walking lunges", block: SESSION_UPPER_VAR, defaultSeries: "10–12 pas / jambe", track: true, unit: "Pdc", initialSeries: "10–12 pas / jambe", initialLoad: null },
+      { id: "uppervar-bike", name: "Bike modéré/rapide", block: SESSION_UPPER_VAR, defaultSeries: "1–2 min", track: true, unit: "niveau", initialSeries: "1–2 min", initialLoad: 2 },
+      { id: "uppervar-ext-lombaires", name: "Extensions lombaire", block: SESSION_UPPER_VAR, defaultSeries: "3x15", track: true, unit: "kg", initialSeries: "3x15", initialLoad: 10 },
+      { id: "uppervar-pallof-press", name: "Pallof press", block: SESSION_UPPER_VAR, defaultSeries: "3x15", track: true, unit: "kg", initialSeries: "3x15", initialLoad: 10 },
+
+      // Legs + Natation
+      { id: "legs-velo-tranquille", name: "Vélo ou rameur tranquille", block: SESSION_LEGS, defaultSeries: "5 min", track: false, unit: null, initialSeries: "5 min", initialLoad: null },
+      { id: "legs-mobilite", name: "Mobilité", block: SESSION_LEGS, defaultSeries: "/", track: false, unit: null, initialSeries: "/", initialLoad: null },
+      { id: "legs-hip-thrust-leger", name: "Hip Thrust léger", block: SESSION_LEGS, defaultSeries: "2x10", track: true, unit: "kg", initialSeries: "2x10", initialLoad: 10 },
+      { id: "legs-hip-thrust", name: "Hip Thrust", block: SESSION_LEGS, defaultSeries: "4x6–8", track: true, unit: "kg", initialSeries: "4x6–8", initialLoad: 25 },
+      { id: "legs-leg-press", name: "Leg Press", block: SESSION_LEGS, defaultSeries: "3–4x8–12", track: true, unit: "kg", initialSeries: "3–4x8–12", initialLoad: 60 },
+      { id: "legs-leg-curl", name: "Leg Curl", block: SESSION_LEGS, defaultSeries: "3x10–12", track: true, unit: "kg", initialSeries: "3x10–12", initialLoad: 22.5 },
+      { id: "legs-nage-facile", name: "Nage facile (crawl/dos/brasse)", block: SESSION_LEGS, defaultSeries: "5–10 min", track: false, unit: null, initialSeries: "5–10 min", initialLoad: null },
+      { id: "legs-nage-moderee", name: "Nage rythme modéré", block: SESSION_LEGS, defaultSeries: "8–12x50 m (30 s)", track: false, unit: null, initialSeries: "8–12x50 m (30 s)", initialLoad: null },
+      { id: "legs-nage-calme", name: "Nage très tranquille en retour au calme", block: SESSION_LEGS, defaultSeries: "5–10 min", track: false, unit: null, initialSeries: "5–10 min", initialLoad: null }
+    ];
+
+    const STORAGE_KEY = "hyrox_tracker_sessions_v1";
+    const EVOLUTION_KEY = "hyrox_tracker_evolution_v1";
+
+    let sessions = [];
+    let evolutionConfig = {}; // { [exerciseId]: { increment: number|null, targetSeries: string|null } }
+    let currentExerciseId = null;
+    let chartInstance = null;
+
+    // =========================
+    // 2. Utilitaires
+    // =========================
+
+    function getBlocks() {
+      return [...new Set(exercises.map(e => e.block))].sort();
+    }
+
+    function loadSessions() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        sessions = raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        sessions = [];
+      }
+    }
+
+    function saveSessions() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
+      updateGlobalStats();
+    }
+
+    function loadEvolutionConfig() {
+      try {
+        const raw = localStorage.getItem(EVOLUTION_KEY);
+        evolutionConfig = raw ? JSON.parse(raw) : {};
+      } catch (e) {
+        evolutionConfig = {};
+      }
+    }
+
+    function saveEvolutionConfig() {
+      localStorage.setItem(EVOLUTION_KEY, JSON.stringify(evolutionConfig));
+    }
+
+    function getSessionsForExercise(exId) {
+      return sessions
+        .filter(s => s.exerciseId === exId)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+    }
+
+    function getLastSession(exId) {
+      const list = getSessionsForExercise(exId);
+      return list.length ? list[list.length - 1] : null;
+    }
+
+    function parseNumeric(text) {
+      if (!text) return null;
+      const cleaned = text.replace(",", ".").trim();
+      const val = parseFloat(cleaned);
+      return isNaN(val) ? null : val;
+    }
+
+    function formatValueWithUnit(val, ex) {
+      if (!ex || !ex.track) return "–";
+      if (ex.unit === "Pdc") return val == null ? "Pdc" : `${val} (Pdc)`;
+      if (val == null) return "–";
+      if (ex.unit === "kg") {
+        if (Math.abs(Math.round(val) - val) < 0.01) return `${Math.round(val)} kg`;
+        return `${val.toFixed(1)} kg`;
+      }
+      if (ex.unit === "niveau") {
+        if (Math.abs(Math.round(val) - val) < 0.01) return `niveau ${Math.round(val)}`;
+        return `niveau ${val.toFixed(1)}`;
+      }
+      return `${val} ${ex.unit || ""}`.trim();
+    }
+
+    function getEvolutionConfigFor(exId) {
+      return evolutionConfig[exId] || {};
+    }
+
+    // Dashboard global: stats
+    function updateGlobalStats() {
+      const totalSessionsEl = document.getElementById("statsTotalSessions");
+      const trackedExercisesEl = document.getElementById("statsTrackedExercises");
+      const last7DaysEl = document.getElementById("statsLast7Days");
+      if (!totalSessionsEl || !trackedExercisesEl || !last7DaysEl) return;
+
+      const now = new Date();
+      const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+      let total = 0;
+      let last7 = 0;
+      const seenEx = new Set();
+
+      sessions.forEach(s => {
+        if (typeof s.id === "string" && s.id.startsWith("baseline-")) return; // on ne compte pas la seed
+        const d = new Date(s.date);
+        total++;
+        if (d >= sevenDaysAgo) last7++;
+        seenEx.add(s.exerciseId);
+      });
+
+      totalSessionsEl.textContent = total.toString();
+      trackedExercisesEl.textContent = seenEx.size.toString();
+      last7DaysEl.textContent = last7.toString();
+    }
+
+    // =========================
+    // 3. Seed semaine 0 si aucune session
+    // =========================
+
+    function seedBaselineIfEmpty() {
+      if (sessions.length > 0) return;
+
+      const baseDate = new Date();
+      baseDate.setDate(baseDate.getDate() - 8); // il y a plus d'une semaine
+      const baseISO = baseDate.toISOString();
+
+      exercises.forEach(ex => {
+        if (!ex.track) return;
+
+        const session = {
+          id: "baseline-" + ex.id,
+          exerciseId: ex.id,
+          date: baseISO,
+          lastWeekWeight: null,
+          lastWeekSeries: null,
+          targetWeight: ex.initialLoad != null ? ex.initialLoad : null,
+          targetSeries: ex.initialSeries || ex.defaultSeries || null,
+          actualWeight: ex.initialLoad != null ? ex.initialLoad : null,
+          actualSeries: ex.initialSeries || ex.defaultSeries || null
+        };
+        sessions.push(session);
+      });
+
+      saveSessions();
+    }
+
+    // =========================
+    // 4. Filtres principaux : Séance puis Exercice
+    // =========================
+
+    function initFilters() {
+      const sessionFilter = document.getElementById("sessionFilter");
+      const exerciseSelect = document.getElementById("exerciseSelect");
+
+      const blocks = getBlocks();
+      sessionFilter.innerHTML = "";
+      blocks.forEach(block => {
+        const opt = document.createElement("option");
+        opt.value = block;
+        opt.textContent = block;
+        sessionFilter.appendChild(opt);
+      });
+
+      sessionFilter.addEventListener("change", () => {
+        populateExerciseSelect(sessionFilter.value);
+      });
+
+      exerciseSelect.addEventListener("change", () => {
+        const exId = exerciseSelect.value;
+        if (exId) {
+          currentExerciseId = exId;
+          loadExerciseDetail(exId);
+        }
+      });
+
+      if (blocks.length > 0) {
+        sessionFilter.value = blocks[0];
+        populateExerciseSelect(blocks[0]);
+      }
+    }
+
+    function populateExerciseSelect(block) {
+      const exerciseSelect = document.getElementById("exerciseSelect");
+      exerciseSelect.innerHTML = "";
+
+      const filtered = exercises.filter(e => e.block === block);
+      filtered.forEach(ex => {
+        const opt = document.createElement("option");
+        opt.value = ex.id;
+        opt.textContent = ex.name;
+        exerciseSelect.appendChild(opt);
+      });
+
+      if (filtered.length > 0) {
+        currentExerciseId = filtered[0].id;
+        exerciseSelect.value = currentExerciseId;
+        loadExerciseDetail(currentExerciseId);
+      }
+    }
+
+    // =========================
+    // 5. Affichage détail exercice
+    // =========================
+
+    function loadExerciseDetail(exId) {
+      const ex = exercises.find(e => e.id === exId);
+      if (!ex) return;
+
+      const blockEl = document.getElementById("exerciseBlock");
+      const nameEl = document.getElementById("exerciseName");
+      const defSeriesEl = document.getElementById("exerciseDefaultSeries");
+
+      const nonTrackedNotice = document.getElementById("nonTrackedNotice");
+      const trackedSection = document.getElementById("trackedSection");
+      const nonTrackedInputsNotice = document.getElementById("nonTrackedInputsNotice");
+      const trackedInputs = document.getElementById("trackedInputs");
+
+      const lastWeightEl = document.getElementById("lastWeekWeight");
+      const lastSeriesEl = document.getElementById("lastWeekSeries");
+      const targetWeightInput = document.getElementById("targetWeightInput");
+      const targetSeriesInput = document.getElementById("targetSeriesInput");
+      const actualWeightInput = document.getElementById("actualWeightInput");
+      const actualSeriesInput = document.getElementById("actualSeriesInput");
+      const infoMessageEl = document.getElementById("infoMessage");
+      const chartHintEl = document.getElementById("chartHint");
+
+      blockEl.textContent = ex.block;
+      nameEl.textContent = ex.name;
+      defSeriesEl.textContent = ex.defaultSeries;
+      infoMessageEl.textContent = "";
+
+      if (!ex.track) {
+        nonTrackedNotice.style.display = "block";
+        trackedSection.style.display = "none";
+        nonTrackedInputsNotice.style.display = "block";
+        trackedInputs.style.display = "none";
+        lastWeightEl.textContent = "–";
+        lastSeriesEl.textContent = ex.defaultSeries || "-";
+        updateChartForExercise(null); // vide
+        chartHintEl.textContent = "Cet exercice n'est pas tracké.";
+        return;
+      } else {
+        nonTrackedNotice.style.display = "none";
+        trackedSection.style.display = "block";
+        nonTrackedInputsNotice.style.display = "none";
+        trackedInputs.style.display = "block";
+      }
+
+      const last = getLastSession(exId);
+      const config = getEvolutionConfigFor(exId);
+
+      if (last) {
+        const lastWeight = last.actualWeight ?? last.targetWeight ?? ex.initialLoad ?? null;
+        const lastSeries = last.actualSeries ?? last.targetSeries ?? ex.initialSeries ?? ex.defaultSeries;
+
+        lastWeightEl.textContent = formatValueWithUnit(lastWeight, ex);
+        lastSeriesEl.textContent = lastSeries || "-";
+
+        const inc = config.increment != null ? config.increment : 2.5;
+        let nextWeight = null;
+        if (ex.unit === "Pdc") {
+          nextWeight = null; // pas de progression automatique sur Pdc
+        } else if (lastWeight != null && typeof inc === "number") {
+          nextWeight = lastWeight + inc;
+        }
+
+        targetWeightInput.value = nextWeight != null ? nextWeight.toString().replace(".", ",") : "";
+        targetSeriesInput.value = config.targetSeries || lastSeries || ex.initialSeries || ex.defaultSeries || "";
+      } else {
+        lastWeightEl.textContent = "–";
+        lastSeriesEl.textContent = ex.initialSeries || ex.defaultSeries || "-";
+        targetWeightInput.value = ex.initialLoad != null ? ex.initialLoad.toString().replace(".", ",") : "";
+        const confSeries = config.targetSeries || ex.initialSeries || ex.defaultSeries || "";
+        targetSeriesInput.value = confSeries;
+      }
+
+      actualWeightInput.value = "";
+      actualSeriesInput.value = "";
+
+      updateChartForExercise(exId);
+
+      const exSessions = getSessionsForExercise(exId);
+      chartHintEl.textContent = exSessions.length
+        ? "Chaque point correspond à une séance (charge réelle si numérique, sinon charge cible)."
+        : "Le graphe s'actualise dès que tu as au moins une séance encodée.";
+    }
+
+    // =========================
+    // 6. Graphique (charge numérique seulement)
+    // =========================
+
+    function updateChartForExercise(exId) {
+      const ctx = document.getElementById("weightChart").getContext("2d");
+
+      if (!exId) {
+        if (chartInstance) {
+          chartInstance.destroy();
+          chartInstance = null;
+        }
+        return;
+      }
+
+      const ex = exercises.find(e => e.id === exId);
+      const list = getSessionsForExercise(exId);
+
+      const labels = [];
+      const data = [];
+
+      list.forEach(s => {
+        const d = new Date(s.date);
+        const label = d.toLocaleDateString("fr-BE", { day: "2-digit", month: "2-digit" });
+
+        let val = s.actualWeight ?? s.targetWeight ?? null;
+        // On ne trace que si la charge est numérique et ex non Pdc
+        if (ex.unit === "Pdc") {
+          val = null;
+        } else if (typeof val !== "number" || isNaN(val)) {
+          val = null;
+        }
+
+        if (val != null) {
+          labels.push(label);
+          data.push(val);
+        }
+      });
+
+      if (chartInstance) {
+        chartInstance.destroy();
+        chartInstance = null;
+      }
+
+      if (!data.length) {
+        return;
+      }
+
+      chartInstance = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: "Charge",
+              data,
+              tension: 0.3,
+              pointRadius: 4,
+              pointHoverRadius: 6
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              ticks: { color: "#9ca3af" },
+              grid: { color: "rgba(31,41,55,0.4)" }
+            },
+            y: {
+              ticks: { color: "#9ca3af" },
+              grid: { color: "rgba(31,41,55,0.4)" }
+            }
+          },
+          plugins: {
+            legend: {
+              labels: { color: "#e5e7eb" }
+            }
+          }
+        }
+      });
+    }
+
+    // =========================
+    // 7. Sauvegarde de séance
+    // =========================
+
+    function setupSaveButton() {
+      const saveButton = document.getElementById("saveButton");
+      const infoMessageEl = document.getElementById("infoMessage");
+
+      saveButton.addEventListener("click", () => {
+        if (!currentExerciseId) return;
+
+        const ex = exercises.find(e => e.id === currentExerciseId);
+        if (!ex || !ex.track) return;
+
+        const targetWeightInput = document.getElementById("targetWeightInput");
+        const targetSeriesInput = document.getElementById("targetSeriesInput");
+        const actualWeightInput = document.getElementById("actualWeightInput");
+        const actualSeriesInput = document.getElementById("actualSeriesInput");
+
+        const targetWeightNum = parseNumeric(targetWeightInput.value);
+        const actualWeightNum = parseNumeric(actualWeightInput.value);
+
+        const targetSeries = (targetSeriesInput.value || "").trim() || null;
+        const actualSeries = (actualSeriesInput.value || "").trim() || null;
+
+        const last = getLastSession(currentExerciseId);
+        const lastWeight = last ? (last.actualWeight ?? last.targetWeight ?? null) : null;
+        const lastSeries = last ? (last.actualSeries ?? last.targetSeries ?? null) : null;
+
+        const session = {
+          id: Date.now().toString() + "-" + Math.random().toString(16).slice(2),
+          exerciseId: currentExerciseId,
+          date: new Date().toISOString(),
+          lastWeekWeight: lastWeight,
+          lastWeekSeries: lastSeries,
+          targetWeight: isNaN(targetWeightNum) ? null : targetWeightNum,
+          targetSeries,
+          actualWeight: isNaN(actualWeightNum) ? null : actualWeightNum,
+          actualSeries
+        };
+
+        sessions.push(session);
+        saveSessions();
+        loadExerciseDetail(currentExerciseId);
+
+        infoMessageEl.textContent = "Séance enregistrée ✅";
+        setTimeout(() => {
+          infoMessageEl.textContent = "";
+        }, 2500);
+      });
+    }
+
+    // =========================
+    // 8. Résumé de la semaine (exos trackés)
+    // =========================
+
+    function setupWeekSummaryButton() {
+      const button = document.getElementById("weekSummaryButton");
+      const card = document.getElementById("weekSummaryCard");
+      const content = document.getElementById("weekSummaryContent");
+      const info = document.getElementById("weekSummaryInfo");
+
+      button.addEventListener("click", () => {
+        const now = new Date();
+        const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+        const recent = sessions.filter(s => new Date(s.date) >= sevenDaysAgo && !(typeof s.id === "string" && s.id.startsWith("baseline-")));
+
+        if (!recent.length) {
+          card.style.display = "block";
+          info.textContent = "Aucune séance encodée sur les 7 derniers jours.";
+          content.innerHTML = "";
+          card.scrollIntoView({ behavior: "smooth", block: "start" });
+          return;
+        }
+
+        const byExercise = {};
+        recent.forEach(s => {
+          if (!byExercise[s.exerciseId]) byExercise[s.exerciseId] = [];
+          byExercise[s.exerciseId].push(s);
+        });
+
+        let totalSessions = 0;
+        let totalExercises = 0;
+        let html = `<ul class="summary-list">`;
+
+        Object.keys(byExercise).forEach(exId => {
+          const ex = exercises.find(e => e.id === exId);
+          if (!ex || !ex.track) return;
+
+          const allForEx = getSessionsForExercise(exId);
+          if (!allForEx.length) return;
+
+          const last = allForEx[allForEx.length - 1];
+          const prev = allForEx.length >= 2 ? allForEx[allForEx.length - 2] : null;
+
+          const lastWeight = (typeof last.actualWeight === "number" && !isNaN(last.actualWeight))
+            ? last.actualWeight
+            : (typeof last.targetWeight === "number" && !isNaN(last.targetWeight) ? last.targetWeight : null);
+          const prevWeight = prev
+            ? ((typeof prev.actualWeight === "number" && !isNaN(prev.actualWeight))
+                ? prev.actualWeight
+                : (typeof prev.targetWeight === "number" && !isNaN(prev.targetWeight) ? prev.targetWeight : null))
+            : null;
+
+          let deltaText = "";
+          if (lastWeight != null && prevWeight != null && ex.unit !== "Pdc") {
+            const delta = lastWeight - prevWeight;
+            if (Math.abs(delta) < 0.01) {
+              deltaText = " (↔ stable)";
+            } else if (delta > 0) {
+              deltaText = ` (+${delta.toFixed(1)} vs séance précédente)`;
+            } else {
+              deltaText = ` (${delta.toFixed(1)} vs séance précédente)`;
+            }
+          }
+
+          totalExercises++;
+          totalSessions += byExercise[exId].length;
+
+          html += `
+            <li>
+              <span><strong>${ex.name}</strong></span>
+              <span>${formatValueWithUnit(lastWeight, ex)}${deltaText}</span>
+            </li>
+          `;
+        });
+
+        html += "</ul>";
+
+        if (totalExercises === 0) {
+          info.textContent = "Aucun exercice tracké encodé sur les 7 derniers jours.";
+          content.innerHTML = "";
+        } else {
+          info.textContent =
+            "Résumé des 7 derniers jours sur les exercices trackés (charge réelle si dispo, sinon charge cible).";
+          content.innerHTML =
+            `<p style="margin:0 0 0.4rem;" class="muted">Sessions trackées : <strong>${totalSessions}</strong> · Exercices trackés : <strong>${totalExercises}</strong></p>` +
+            html;
+        }
+
+        card.style.display = "block";
+        card.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+
+    // =========================
+    // 9. Paramètres d’évolution
+    // =========================
+
+    function setupEvolutionConfigSection() {
+      const sessionSelect = document.getElementById("configSessionFilter");
+      const exerciseSelect = document.getElementById("configExerciseSelect");
+      const incrementInput = document.getElementById("incrementKgInput");
+      const targetSeriesInput = document.getElementById("configTargetSeriesInput");
+      const saveButton = document.getElementById("saveEvolutionConfigButton");
+      const infoEl = document.getElementById("evolutionConfigInfo");
+
+      const blocks = getBlocks();
+      sessionSelect.innerHTML = "";
+      blocks.forEach(block => {
+        const opt = document.createElement("option");
+        opt.value = block;
+        opt.textContent = block;
+        sessionSelect.appendChild(opt);
+      });
+
+      sessionSelect.addEventListener("change", () => {
+        populateConfigExerciseSelect(sessionSelect.value);
+      });
+
+      exerciseSelect.addEventListener("change", () => {
+        loadConfigForSelected();
+      });
+
+      function populateConfigExerciseSelect(block) {
+        exerciseSelect.innerHTML = "";
+        const filtered = exercises.filter(e => e.block === block && e.track);
+        filtered.forEach(ex => {
+          const opt = document.createElement("option");
+          opt.value = ex.id;
+          opt.textContent = ex.name;
+          exerciseSelect.appendChild(opt);
+        });
+
+        if (filtered.length > 0) {
+          exerciseSelect.value = filtered[0].id;
+          loadConfigForSelected();
+        } else {
+          incrementInput.value = "";
+          targetSeriesInput.value = "";
+        }
+      }
+
+      function loadConfigForSelected() {
+        const exId = exerciseSelect.value;
+        if (!exId) return;
+        const conf = getEvolutionConfigFor(exId);
+        incrementInput.value =
+          conf.increment != null ? conf.increment.toString().replace(".", ",") : "";
+        targetSeriesInput.value = conf.targetSeries || "";
+        infoEl.textContent = "";
+      }
+
+      saveButton.addEventListener("click", () => {
+        const exId = exerciseSelect.value;
+        if (!exId) return;
+
+        const incVal = parseNumeric(incrementInput.value);
+        const targetSeries = (targetSeriesInput.value || "").trim() || null;
+
+        evolutionConfig[exId] = {
+          increment: isNaN(incVal) ? null : incVal,
+          targetSeries
+        };
+        saveEvolutionConfig();
+
+        infoEl.textContent = "Paramètres enregistrés ✅";
+        setTimeout(() => {
+          infoEl.textContent = "";
+        }, 2500);
+
+        if (exId === currentExerciseId) {
+          loadExerciseDetail(exId);
+        }
+      });
+
+      if (blocks.length > 0) {
+        sessionSelect.value = blocks[0];
+        populateConfigExerciseSelect(blocks[0]);
+      }
+    }
+
+    // =========================
+    // 10. Visualiser la séance (plan)
+    // =========================
+
+    function setupWorkoutPlanSection() {
+      const sessionSelect = document.getElementById("planSessionFilter");
+      const content = document.getElementById("planContent");
+
+      const blocks = getBlocks();
+      sessionSelect.innerHTML = "";
+      blocks.forEach(block => {
+        const opt = document.createElement("option");
+        opt.value = block;
+        opt.textContent = block;
+        sessionSelect.appendChild(opt);
+      });
+
+      sessionSelect.addEventListener("change", () => {
+        renderWorkoutPlan(sessionSelect.value);
+      });
+
+      if (blocks.length > 0) {
+        sessionSelect.value = blocks[0];
+        renderWorkoutPlan(blocks[0]);
+      } else {
+        content.innerHTML = "<p class='muted'>Aucune séance définie.</p>";
+      }
+    }
+
+    // *** fonction modifiée : séries fixes issues du plan (initialSeries) ***
+    function renderWorkoutPlan(block) {
+      const content = document.getElementById("planContent");
+      const exList = exercises.filter(e => e.block === block);
+
+      if (!exList.length) {
+        content.innerHTML = "<p class='muted'>Aucun exercice pour cette séance.</p>";
+        return;
+      }
+
+      let html = "<ul class='summary-list'>";
+      exList.forEach(ex => {
+        // Séries : toujours celles du plan PDF, indépendamment des séances encodées
+        const seriesPlan = ex.initialSeries || ex.defaultSeries || "-";
+
+        // Charge suggérée : on garde la logique auto (optionnel mais pratique)
+        const allSessions = getSessionsForExercise(ex.id);
+        const last = allSessions.length ? allSessions[allSessions.length - 1] : null;
+
+        let lastWeight = null;
+        if (last) {
+          if (typeof last.actualWeight === "number" && !isNaN(last.actualWeight)) {
+            lastWeight = last.actualWeight;
+          } else if (typeof last.targetWeight === "number" && !isNaN(last.targetWeight)) {
+            lastWeight = last.targetWeight;
+          }
+        }
+
+        const conf = getEvolutionConfigFor(ex.id);
+        const inc = (conf.increment != null ? conf.increment : 2.5);
+        let suggestedWeight = null;
+
+        if (!ex.track) {
+          suggestedWeight = null;
+        } else if (ex.unit === "Pdc") {
+          suggestedWeight = null; // pas de progression auto sur Pdc
+        } else if (lastWeight != null && typeof inc === "number") {
+          suggestedWeight = lastWeight + inc;
+        } else if (ex.initialLoad != null && typeof inc === "number") {
+          suggestedWeight = ex.initialLoad + inc;
+        }
+
+        const weightText = !ex.track
+          ? "exercice non tracké"
+          : formatValueWithUnit(suggestedWeight, ex);
+
+        html += `
+          <li>
+            <span><strong>${ex.name}</strong> · ${seriesPlan}</span>
+            <span>${weightText}</span>
+          </li>
+        `;
+      });
+      html += "</ul>";
+
+      content.innerHTML = html;
+    }
+
+    // =========================
+    // 11. Init globale
+    // =========================
+
+    function init() {
+      loadSessions();
+      loadEvolutionConfig();
+      seedBaselineIfEmpty();
+      updateGlobalStats();
+      initFilters();
+      setupSaveButton();
+      setupWeekSummaryButton();
+      setupEvolutionConfigSection();
+      setupWorkoutPlanSection();
+    }
+
+    document.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+</html>
