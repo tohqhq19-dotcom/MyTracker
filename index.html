@@ -5,8 +5,6 @@
   <title>MyTracker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
   <style>
     :root {
       --bg: #020617;
@@ -223,7 +221,8 @@
     }
 
     select:focus,
-    input:focus {
+    input:focus,
+    textarea:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4);
       background: #020617;
@@ -285,11 +284,6 @@
     .btn-secondary:hover {
       filter: brightness(1.05);
       box-shadow: 0 10px 24px rgba(15, 23, 42, 0.8);
-    }
-
-    .btn-secondary:active {
-      filter: brightness(1.01);
-      transform: translateY(1px);
     }
 
     .info-message {
@@ -362,38 +356,6 @@
       font-weight: 500;
     }
 
-    .kpi-card {
-      padding: 0.8rem 0.9rem;
-    }
-
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.75rem;
-    }
-
-    .kpi {
-      padding: 0.55rem 0.6rem;
-      border-radius: 0.7rem;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(30, 64, 175, 0.75);
-      display: flex;
-      flex-direction: column;
-      gap: 0.15rem;
-    }
-
-    .kpi-label {
-      font-size: 0.74rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--muted-soft);
-    }
-
-    .kpi-value {
-      font-size: 1.05rem;
-      font-weight: 600;
-    }
-
     .top-grid {
       display: grid;
       grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.9fr);
@@ -406,13 +368,6 @@
       grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
       gap: 1rem;
       align-items: flex-start;
-    }
-
-    canvas {
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: 0.85rem;
-      border: 1px solid rgba(15, 23, 42, 0.9);
-      padding: 0.4rem;
     }
 
     .nutrition-table-wrapper {
@@ -468,6 +423,7 @@
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       font-size: 0.8rem;
       resize: vertical;
+      outline: none;
     }
 
     @media (max-width: 900px) {
@@ -475,15 +431,14 @@
         flex-direction: column;
         align-items: flex-start;
       }
+
       .app-right {
         align-items: flex-start;
       }
+
       .top-grid,
       .layout {
         grid-template-columns: minmax(0, 1fr);
-      }
-      .kpi-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
     }
 
@@ -491,9 +446,7 @@
       main {
         padding-inline: 0.8rem;
       }
-      .kpi-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
+
       .card {
         padding-inline: 0.9rem;
       }
@@ -509,13 +462,15 @@
           MyTracker
           <span class="app-pill">Programme hybride</span>
         </h1>
-        <p>Visualise ton plan, choisis un exercice, encode ta séance et suis la progression de ta charge.</p>
+        <p>Visualise ton plan, encode ta séance et modifie ton programme quand tu veux.</p>
       </div>
+
       <div class="app-right">
         <div class="app-meta">
           <span class="dot"></span>
-          <span>Suivi local (données stockées dans ton navigateur)</span>
+          <span>Données stockées localement dans ton navigateur</span>
         </div>
+
         <div class="mode-switch">
           <button type="button" class="mode-btn active" data-mode="sport">Sport</button>
           <button type="button" class="mode-btn" data-mode="nutrition">Nutrition</button>
@@ -525,34 +480,15 @@
   </header>
 
   <main>
+    <!-- =================== VUE SPORT =================== -->
     <div id="sportView">
-      <section class="card kpi-card">
-        <div class="card-header-title">
-          <div class="section-title">Vue d’ensemble</div>
-        </div>
-        <div class="kpi-grid">
-          <div class="kpi">
-            <div class="kpi-label">Séances trackées</div>
-            <div class="kpi-value" id="statsTotalSessions">0</div>
-          </div>
-          <div class="kpi">
-            <div class="kpi-label">Exos trackés</div>
-            <div class="kpi-value" id="statsTrackedExercises">0</div>
-          </div>
-          <div class="kpi">
-            <div class="kpi-label">Derniers 7 jours</div>
-            <div class="kpi-value" id="statsLast7Days">0</div>
-          </div>
-        </div>
-      </section>
-
       <section class="top-grid">
         <div class="card">
           <div class="card-header-title">
             <div>
               <div class="section-title">Visualiser ma séance</div>
               <div class="section-subtitle">
-                Récap des exercices prévus, de la charge suggérée et du format de séries / reps.
+                Récap des exercices prévus et de la charge suggérée.
               </div>
             </div>
           </div>
@@ -563,6 +499,7 @@
               <select id="planSessionFilter"></select>
             </div>
           </div>
+
           <div id="planContent" class="muted"></div>
         </div>
 
@@ -571,7 +508,7 @@
             <div>
               <div class="section-title">Sélection de travail</div>
               <div class="section-subtitle">
-                1) Sélectionne la séance · 2) Choisis l’exercice · 3) Encode ce que tu as fait.
+                Sélectionne la séance, choisis l’exercice et encode ce que tu as fait.
               </div>
             </div>
           </div>
@@ -581,6 +518,7 @@
               <div class="field-label">Séance</div>
               <select id="sessionFilter"></select>
             </div>
+
             <div class="col-2">
               <div class="field-label">Exercice</div>
               <select id="exerciseSelect"></select>
@@ -602,6 +540,7 @@
             </div>
           </div>
         </div>
+
         <div id="weekSummaryContent" class="muted"></div>
       </section>
 
@@ -609,6 +548,7 @@
         <div class="card" id="exerciseInfoCard">
           <div class="badge" id="exerciseBlock">Séance</div>
           <h2 id="exerciseName">Exercice</h2>
+
           <div class="subtitle">
             Format prévu : <span id="exerciseDefaultSeries">-</span>
           </div>
@@ -618,7 +558,8 @@
           </div>
 
           <div id="trackedSection">
-            <div class="section-title" style="margin-top:0.4rem;">Semaine passée</div>
+            <div class="section-title" style="margin-top:0.4rem;">Séance précédente</div>
+
             <div class="row" style="margin-top:0.35rem;">
               <div class="col-2">
                 <div class="field-label">Charge</div>
@@ -626,6 +567,7 @@
                   <span id="lastWeekWeight">-</span>
                 </div>
               </div>
+
               <div class="col-2">
                 <div class="field-label">Séries / reps</div>
                 <div class="pill">
@@ -635,10 +577,11 @@
             </div>
 
             <div style="margin-top:0.75rem;">
-              <div class="section-title">Plan auto pour cette semaine</div>
+              <div class="section-title">Plan auto</div>
               <div class="section-subtitle">
                 Basé sur la séance précédente et les paramètres d’évolution.
               </div>
+
               <div class="row" style="margin-top:0.4rem;">
                 <div class="col-2">
                   <div class="field-label">Charge cible</div>
@@ -651,6 +594,7 @@
                     tabindex="-1"
                   />
                 </div>
+
                 <div class="col-2">
                   <div class="field-label">Séries / reps cibles</div>
                   <input
@@ -672,7 +616,7 @@
             <div>
               <div class="section-title">Ce que tu as fait</div>
               <div class="section-subtitle">
-                Encode la charge et les séries / reps réellement réalisées pour ce bloc.
+                Encode la charge et les séries / reps réellement réalisées.
               </div>
             </div>
           </div>
@@ -687,27 +631,19 @@
                 <div class="field-label">Charge réelle</div>
                 <input type="text" id="actualWeightInput" placeholder="ex: 62.5, modéré, Pdc..." />
               </div>
+
               <div class="col-2">
                 <div class="field-label">Séries / reps réelles</div>
                 <input type="text" id="actualSeriesInput" placeholder="ex: 4x8" />
               </div>
             </div>
+
             <button id="saveButton">
               Enregistrer cette séance
             </button>
           </div>
 
           <div class="info-message" id="infoMessage"></div>
-
-          <div style="margin-top:1rem;">
-            <div class="section-title">Évolution de la charge</div>
-            <p class="muted" id="chartHint" style="margin-top:0.35rem;">
-              Le graphe s’actualise dès qu’au moins une séance trackée avec une charge numérique est encodée.
-            </p>
-            <div style="height:220px; margin-top:0.3rem;">
-              <canvas id="weightChart"></canvas>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -716,7 +652,7 @@
           <div>
             <div class="section-title">Paramètres d’évolution</div>
             <div class="section-subtitle">
-              Définit, pour chaque exercice tracké, l’incrément de charge et l’objectif de séries.
+              Définit l’incrément de charge et l’objectif de séries par exercice.
             </div>
           </div>
         </div>
@@ -726,6 +662,7 @@
             <div class="field-label">Séance</div>
             <select id="configSessionFilter"></select>
           </div>
+
           <div class="col-2">
             <div class="field-label">Exercice</div>
             <select id="configExerciseSelect"></select>
@@ -737,6 +674,7 @@
             <div class="field-label">Incrément de charge</div>
             <input type="text" id="incrementKgInput" placeholder="ex: 2.5" />
           </div>
+
           <div class="col-2">
             <div class="field-label">Objectif séries / reps</div>
             <input type="text" id="configTargetSeriesInput" placeholder="ex: 4x10" />
@@ -746,6 +684,7 @@
         <button id="saveEvolutionConfigButton" style="margin-top:0.7rem;">
           Enregistrer les paramètres d’évolution
         </button>
+
         <div class="info-message" id="evolutionConfigInfo"></div>
       </section>
 
@@ -758,23 +697,28 @@
           <div>
             <div class="section-title">Éditer le programme sport</div>
             <div class="section-subtitle">
-              Format : Séance;Exercice;Séries;Track(1 ou 0);Unité;Charge initiale;Séries initiales.
+              Format : Séance;Exercice;Séries;Track(1 ou 0);Unité;Charge initiale;Séries initiales
             </div>
           </div>
         </div>
+
         <textarea id="sportProgramTextarea" class="program-textarea"></textarea>
+
         <div class="row" style="margin-top:0.6rem;">
           <div class="col-2">
             <button id="saveSportProgramButton">Enregistrer ce programme</button>
           </div>
+
           <div class="col-2">
             <button id="resetSportProgramButton" class="btn-secondary">Revenir au programme par défaut</button>
           </div>
         </div>
+
         <div class="info-message" id="sportProgramInfo"></div>
       </section>
     </div>
 
+    <!-- =================== VUE NUTRITION =================== -->
     <section class="card" id="nutritionView" style="display:none;">
       <div class="card-header-title">
         <div>
@@ -796,6 +740,7 @@
               <th>OK</th>
             </tr>
           </thead>
+
           <tbody id="nutritionTableBody"></tbody>
         </table>
       </div>
@@ -810,15 +755,19 @@
         <p class="muted" style="margin-bottom:0.35rem;">
           Format : Heure;Élément;Détail;KCAL — une ligne par aliment / boisson.
         </p>
+
         <textarea id="nutritionProgramTextarea" class="program-textarea"></textarea>
+
         <div class="row" style="margin-top:0.6rem;">
           <div class="col-2">
             <button id="saveNutritionProgramButton">Enregistrer ce programme</button>
           </div>
+
           <div class="col-2">
             <button id="resetNutritionProgramButton" class="btn-secondary">Revenir au programme par défaut</button>
           </div>
         </div>
+
         <div class="info-message" id="nutritionProgramInfo"></div>
       </div>
     </section>
@@ -834,7 +783,6 @@
     const SESSION_DOS_KB_JAMBES = "Séance 2B — Dos + Kettlebell + Jambes";
 
     const DEFAULT_EXERCISES = [
-      // Séance 1 — Pecs + Kettlebell
       { id: "s1-rameur", name: "Rameur", block: SESSION_PECS_KB, defaultSeries: "5 min", track: false, unit: null, initialSeries: "5 min", initialLoad: null },
       { id: "s1-mobilite", name: "Mobilité épaules / thoracique", block: SESSION_PECS_KB, defaultSeries: "/ (libre)", track: false, unit: null, initialSeries: "/ (libre)", initialLoad: null },
       { id: "s1-pompes", name: "Pompes", block: SESSION_PECS_KB, defaultSeries: "1 × 20", track: false, unit: "Pdc", initialSeries: "1 × 20", initialLoad: null },
@@ -850,7 +798,6 @@
 
       { id: "s1-triceps-poulie", name: "Triceps poulie", block: SESSION_PECS_KB, defaultSeries: "2 × 10–12", track: true, unit: "kg", initialSeries: "2 × 10–12", initialLoad: 22.5 },
 
-      // Séance 2A — Dos + Natation
       { id: "s2a-rameur", name: "Rameur", block: SESSION_DOS_NATATION, defaultSeries: "5 min", track: false, unit: null, initialSeries: "5 min", initialLoad: null },
       { id: "s2a-mobilite", name: "Mobilité épaules / thoracique", block: SESSION_DOS_NATATION, defaultSeries: "/ (libre)", track: false, unit: null, initialSeries: "/ (libre)", initialLoad: null },
       { id: "s2a-pompes", name: "Pompes", block: SESSION_DOS_NATATION, defaultSeries: "1 × 20", track: false, unit: "Pdc", initialSeries: "1 × 20", initialLoad: null },
@@ -866,7 +813,6 @@
       { id: "s2a-nage-moderee", name: "Nage rythme modéré", block: SESSION_DOS_NATATION, defaultSeries: "8–12 × 50 m (30 s repos)", track: false, unit: null, initialSeries: "8–12 × 50 m (30 s repos)", initialLoad: null },
       { id: "s2a-retour-calme", name: "Retour au calme", block: SESSION_DOS_NATATION, defaultSeries: "5 min", track: false, unit: null, initialSeries: "5 min", initialLoad: null },
 
-      // Séance 2B — Dos + Kettlebell + Jambes
       { id: "s2b-velo-rameur", name: "Vélo ou Rameur", block: SESSION_DOS_KB_JAMBES, defaultSeries: "5 min", track: false, unit: null, initialSeries: "5 min", initialLoad: null },
       { id: "s2b-mobilite", name: "Mobilité hanche / thoracique", block: SESSION_DOS_KB_JAMBES, defaultSeries: "/ (libre)", track: false, unit: null, initialSeries: "/ (libre)", initialLoad: null },
       { id: "s2b-hip-thrust-leger", name: "Hip Thrust léger (activation)", block: SESSION_DOS_KB_JAMBES, defaultSeries: "2 × 10", track: true, unit: "kg", initialSeries: "2 × 10", initialLoad: 12.5 },
@@ -888,7 +834,7 @@
     ];
 
     // =========================
-    // 2. Programme nutrition par défaut
+    // 2. Programme nutrition
     // =========================
 
     const DEFAULT_NUTRITION_PLAN = [
@@ -910,17 +856,16 @@
     // 3. Storage
     // =========================
 
-    const STORAGE_KEY = "hyrox_tracker_sessions_v1";
-    const EVOLUTION_KEY = "hyrox_tracker_evolution_v1";
-    const SPORT_PLAN_KEY = "hyrox_sport_plan_v1";
-    const NUTRITION_PLAN_KEY = "hyrox_nutrition_plan_v1";
-    const NUTRITION_STATE_KEY = "hyrox_nutrition_state_v1";
+    const STORAGE_KEY = "mytracker_sessions_v3";
+    const EVOLUTION_KEY = "mytracker_evolution_v3";
+    const SPORT_PLAN_KEY = "mytracker_sport_plan_v3";
+    const NUTRITION_PLAN_KEY = "mytracker_nutrition_plan_v3";
+    const NUTRITION_STATE_KEY = "mytracker_nutrition_state_v3";
 
     let exercises = [];
     let sessions = [];
     let evolutionConfig = {};
     let currentExerciseId = null;
-    let chartInstance = null;
 
     let nutritionPlan = [];
     let nutritionState = { date: null, checked: {} };
@@ -933,9 +878,53 @@
       return JSON.parse(JSON.stringify(obj));
     }
 
-    function getBlocks() {
-      return [...new Set(exercises.map(e => e.block))].sort();
+    function parseNumeric(text) {
+      if (!text) return null;
+      const cleaned = String(text).replace(",", ".").trim();
+      const val = parseFloat(cleaned);
+      return isNaN(val) ? null : val;
     }
+
+    function getBlocks() {
+      return [...new Set(exercises.map(e => e.block))];
+    }
+
+    function formatValueWithUnit(val, ex) {
+      if (!ex || !ex.track) return "–";
+      if (ex.unit === "Pdc") return "Pdc";
+      if (val == null) return "–";
+
+      if (ex.unit === "kg") {
+        if (Math.abs(Math.round(val) - val) < 0.01) return `${Math.round(val)} kg`;
+        return `${val.toFixed(1)} kg`;
+      }
+
+      if (ex.unit === "niveau") {
+        if (Math.abs(Math.round(val) - val) < 0.01) return `niveau ${Math.round(val)}`;
+        return `niveau ${val.toFixed(1)}`;
+      }
+
+      return `${val} ${ex.unit || ""}`.trim();
+    }
+
+    function getSessionsForExercise(exId) {
+      return sessions
+        .filter(s => s.exerciseId === exId)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+    }
+
+    function getLastSession(exId) {
+      const list = getSessionsForExercise(exId);
+      return list.length ? list[list.length - 1] : null;
+    }
+
+    function getEvolutionConfigFor(exId) {
+      return evolutionConfig[exId] || {};
+    }
+
+    // =========================
+    // 5. Chargement / sauvegarde sport
+    // =========================
 
     function loadSessions() {
       try {
@@ -948,7 +937,6 @@
 
     function saveSessions() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
-      updateGlobalStats();
     }
 
     function loadEvolutionConfig() {
@@ -964,89 +952,24 @@
       localStorage.setItem(EVOLUTION_KEY, JSON.stringify(evolutionConfig));
     }
 
-    function getSessionsForExercise(exId) {
-      return sessions
-        .filter(s => s.exerciseId === exId)
-        .sort((a, b) => new Date(a.date) - new Date(b.date));
-    }
-
-    function getLastSession(exId) {
-      const list = getSessionsForExercise(exId);
-      return list.length ? list[list.length - 1] : null;
-    }
-
-    function parseNumeric(text) {
-      if (!text) return null;
-      const cleaned = text.replace(",", ".").trim();
-      const val = parseFloat(cleaned);
-      return isNaN(val) ? null : val;
-    }
-
-    function formatValueWithUnit(val, ex) {
-      if (!ex || !ex.track) return "–";
-      if (ex.unit === "Pdc") return "Pdc";
-      if (val == null) return "–";
-      if (ex.unit === "kg") {
-        if (Math.abs(Math.round(val) - val) < 0.01) return `${Math.round(val)} kg`;
-        return `${val.toFixed(1)} kg`;
-      }
-      if (ex.unit === "niveau") {
-        if (Math.abs(Math.round(val) - val) < 0.01) return `niveau ${Math.round(val)}`;
-        return `niveau ${val.toFixed(1)}`;
-      }
-      return `${val} ${ex.unit || ""}`.trim();
-    }
-
-    function getEvolutionConfigFor(exId) {
-      return evolutionConfig[exId] || {};
-    }
-
-    function updateGlobalStats() {
-      const totalEl = document.getElementById("statsTotalSessions");
-      const trackedEl = document.getElementById("statsTrackedExercises");
-      const last7El = document.getElementById("statsLast7Days");
-      if (!totalEl || !trackedEl || !last7El) return;
-
-      const now = new Date();
-      const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-
-      let total = 0;
-      let last7 = 0;
-      const seenEx = new Set();
-
-      sessions.forEach(s => {
-        if (typeof s.id === "string" && s.id.startsWith("baseline-")) return;
-        const d = new Date(s.date);
-        total++;
-        if (d >= sevenDaysAgo) last7++;
-        seenEx.add(s.exerciseId);
-      });
-
-      totalEl.textContent = total.toString();
-      trackedEl.textContent = seenEx.size.toString();
-      last7El.textContent = last7.toString();
-    }
-
-    // =========================
-    // 5. Programme sport modifiable
-    // =========================
-
     function serializeExercisesForEditor(exArray) {
       return exArray.map(e => {
-        const incSeries = e.initialSeries || e.defaultSeries || "";
-        const incLoad = e.initialLoad != null ? String(e.initialLoad) : "";
+        const series = e.initialSeries || e.defaultSeries || "";
+        const load = e.initialLoad != null ? String(e.initialLoad) : "";
         const unit = e.unit || "";
         const track = e.track ? "1" : "0";
-        return [e.block, e.name, e.defaultSeries, track, unit, incLoad, incSeries].join(";");
+        return [e.block, e.name, e.defaultSeries, track, unit, load, series].join(";");
       }).join("\n");
     }
 
     function parseSportPlanText(text) {
       const lines = text.split("\n");
       const result = [];
+
       lines.forEach(line => {
         const raw = line.trim();
         if (!raw || raw.startsWith("#")) return;
+
         const parts = raw.split(";");
         if (parts.length < 3) return;
 
@@ -1067,85 +990,84 @@
 
         const initialSeries = (parts[6] || "").trim() || defaultSeries;
         const id = "ex-" + result.length;
-        result.push({ id, name, block, defaultSeries, track, unit, initialSeries, initialLoad });
+
+        result.push({
+          id,
+          name,
+          block,
+          defaultSeries,
+          track,
+          unit,
+          initialSeries,
+          initialLoad
+        });
       });
+
       return result;
     }
 
     function loadExerciseProgram() {
       const storedText = localStorage.getItem(SPORT_PLAN_KEY);
+
       if (!storedText) {
         exercises = deepClone(DEFAULT_EXERCISES);
         return;
       }
 
       const parsed = parseSportPlanText(storedText);
-      if (parsed.length) {
-        exercises = parsed;
-      } else {
-        exercises = deepClone(DEFAULT_EXERCISES);
-      }
+      exercises = parsed.length ? parsed : deepClone(DEFAULT_EXERCISES);
     }
 
-    function setupSportProgramEditor() {
-      const toggleBtn = document.getElementById("toggleSportProgramEditor");
-      const card = document.getElementById("sportProgramEditorCard");
+    function saveSportProgramFromTextarea() {
       const textarea = document.getElementById("sportProgramTextarea");
-      const saveBtn = document.getElementById("saveSportProgramButton");
-      const resetBtn = document.getElementById("resetSportProgramButton");
       const infoEl = document.getElementById("sportProgramInfo");
+      const text = textarea.value || "";
+      const parsed = parseSportPlanText(text);
 
-      if (!toggleBtn || !card || !textarea) return;
-
-      function refreshTextarea() {
-        textarea.value = serializeExercisesForEditor(exercises);
+      if (!parsed.length) {
+        infoEl.textContent = "Format incorrect : au moins 3 colonnes par ligne.";
+        return;
       }
 
-      toggleBtn.addEventListener("click", () => {
-        const isHidden = card.style.display === "none" || card.style.display === "";
-        if (isHidden) {
-          refreshTextarea();
-          card.style.display = "block";
-          card.scrollIntoView({ behavior: "smooth", block: "start" });
-        } else {
-          card.style.display = "none";
-        }
-      });
+      localStorage.setItem(SPORT_PLAN_KEY, text);
 
-      saveBtn.addEventListener("click", () => {
-        const text = textarea.value || "";
-        const parsed = parseSportPlanText(text);
+      exercises = parsed;
+      sessions = [];
+      evolutionConfig = {};
 
-        if (!parsed.length) {
-          infoEl.textContent = "Format incorrect : au moins 3 colonnes par ligne.";
-          return;
-        }
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(EVOLUTION_KEY);
 
-        localStorage.setItem(SPORT_PLAN_KEY, text);
-        localStorage.removeItem(STORAGE_KEY);
-        localStorage.removeItem(EVOLUTION_KEY);
+      seedBaselineIfEmpty();
+      refreshSportUI();
 
-        infoEl.textContent = "Programme sport enregistré. Les anciennes séances sont effacées.";
-        setTimeout(() => {
-          location.reload();
-        }, 1200);
-      });
-
-      resetBtn.addEventListener("click", () => {
-        localStorage.removeItem(SPORT_PLAN_KEY);
-        localStorage.removeItem(STORAGE_KEY);
-        localStorage.removeItem(EVOLUTION_KEY);
-
-        infoEl.textContent = "Programme sport remis par défaut. Les anciennes séances sont effacées.";
-        setTimeout(() => {
-          location.reload();
-        }, 1200);
-      });
+      infoEl.textContent = "Programme sport enregistré ✅";
+      setTimeout(() => {
+        infoEl.textContent = "";
+      }, 2500);
     }
 
-    // =========================
-    // 6. Seed baseline
-    // =========================
+    function resetSportProgramToDefault() {
+      const infoEl = document.getElementById("sportProgramInfo");
+      const textarea = document.getElementById("sportProgramTextarea");
+
+      localStorage.removeItem(SPORT_PLAN_KEY);
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(EVOLUTION_KEY);
+
+      exercises = deepClone(DEFAULT_EXERCISES);
+      sessions = [];
+      evolutionConfig = {};
+
+      seedBaselineIfEmpty();
+      textarea.value = serializeExercisesForEditor(exercises);
+      refreshSportUI();
+
+      infoEl.textContent = "Programme sport remis par défaut ✅";
+      setTimeout(() => {
+        infoEl.textContent = "";
+      }, 2500);
+    }
 
     function seedBaselineIfEmpty() {
       if (sessions.length > 0) return;
@@ -1157,7 +1079,7 @@
       exercises.forEach(ex => {
         if (!ex.track) return;
 
-        const sess = {
+        sessions.push({
           id: "baseline-" + ex.id,
           exerciseId: ex.id,
           date: baseISO,
@@ -1167,48 +1089,47 @@
           targetSeries: ex.initialSeries || ex.defaultSeries || null,
           actualWeight: ex.initialLoad != null ? ex.initialLoad : null,
           actualSeries: ex.initialSeries || ex.defaultSeries || null
-        };
-
-        sessions.push(sess);
+        });
       });
 
       saveSessions();
     }
 
     // =========================
-    // 7. Filtres et affichage sport
+    // 6. UI sport
     // =========================
 
-    function initFilters() {
-      const sessionFilter = document.getElementById("sessionFilter");
-      const exerciseSelect = document.getElementById("exerciseSelect");
+    function fillSelect(selectEl, values, currentValue = null) {
+      selectEl.innerHTML = "";
+
+      values.forEach(value => {
+        const opt = document.createElement("option");
+        opt.value = value;
+        opt.textContent = value;
+        selectEl.appendChild(opt);
+      });
+
+      if (currentValue && values.includes(currentValue)) {
+        selectEl.value = currentValue;
+      } else if (values.length) {
+        selectEl.value = values[0];
+      }
+    }
+
+    function refreshSportUI() {
       const blocks = getBlocks();
 
-      sessionFilter.innerHTML = "";
+      const sessionFilter = document.getElementById("sessionFilter");
+      const planSessionFilter = document.getElementById("planSessionFilter");
+      const configSessionFilter = document.getElementById("configSessionFilter");
 
-      blocks.forEach(b => {
-        const opt = document.createElement("option");
-        opt.value = b;
-        opt.textContent = b;
-        sessionFilter.appendChild(opt);
-      });
+      fillSelect(sessionFilter, blocks, sessionFilter.value);
+      fillSelect(planSessionFilter, blocks, planSessionFilter.value);
+      fillSelect(configSessionFilter, blocks, configSessionFilter.value);
 
-      sessionFilter.addEventListener("change", () => {
-        populateExerciseSelect(sessionFilter.value);
-      });
-
-      exerciseSelect.addEventListener("change", () => {
-        const exId = exerciseSelect.value;
-        if (exId) {
-          currentExerciseId = exId;
-          loadExerciseDetail(exId);
-        }
-      });
-
-      if (blocks.length) {
-        sessionFilter.value = blocks[0];
-        populateExerciseSelect(blocks[0]);
-      }
+      populateExerciseSelect(sessionFilter.value);
+      renderWorkoutPlan(planSessionFilter.value);
+      populateConfigExerciseSelect(configSessionFilter.value);
     }
 
     function populateExerciseSelect(block) {
@@ -1228,6 +1149,8 @@
         currentExerciseId = filtered[0].id;
         exerciseSelect.value = currentExerciseId;
         loadExerciseDetail(currentExerciseId);
+      } else {
+        currentExerciseId = null;
       }
     }
 
@@ -1235,9 +1158,10 @@
       const ex = exercises.find(e => e.id === exId);
       if (!ex) return;
 
-      const blockEl = document.getElementById("exerciseBlock");
-      const nameEl = document.getElementById("exerciseName");
-      const defSeriesEl = document.getElementById("exerciseDefaultSeries");
+      document.getElementById("exerciseBlock").textContent = ex.block;
+      document.getElementById("exerciseName").textContent = ex.name;
+      document.getElementById("exerciseDefaultSeries").textContent = ex.defaultSeries;
+      document.getElementById("infoMessage").textContent = "";
 
       const nonTrackedNotice = document.getElementById("nonTrackedNotice");
       const trackedSection = document.getElementById("trackedSection");
@@ -1248,25 +1172,18 @@
       const lastSeriesEl = document.getElementById("lastWeekSeries");
       const targetWeightInput = document.getElementById("targetWeightInput");
       const targetSeriesInput = document.getElementById("targetSeriesInput");
-      const actualWeightInput = document.getElementById("actualWeightInput");
-      const actualSeriesInput = document.getElementById("actualSeriesInput");
-      const infoMessageEl = document.getElementById("infoMessage");
-      const chartHintEl = document.getElementById("chartHint");
-
-      blockEl.textContent = ex.block;
-      nameEl.textContent = ex.name;
-      defSeriesEl.textContent = ex.defaultSeries;
-      infoMessageEl.textContent = "";
 
       if (!ex.track) {
         nonTrackedNotice.style.display = "block";
         trackedSection.style.display = "none";
         nonTrackedInputsNotice.style.display = "block";
         trackedInputs.style.display = "none";
+
         lastWeightEl.textContent = "–";
         lastSeriesEl.textContent = ex.defaultSeries || "-";
-        updateChartForExercise(null);
-        chartHintEl.textContent = "Cet exercice n'est pas tracké.";
+        targetWeightInput.value = "";
+        targetSeriesInput.value = "";
+
         return;
       }
 
@@ -1288,9 +1205,7 @@
         const inc = config.increment != null ? config.increment : 2.5;
         let nextWeight = null;
 
-        if (ex.unit === "Pdc") {
-          nextWeight = null;
-        } else if (lastWeight != null && typeof inc === "number") {
+        if (ex.unit !== "Pdc" && lastWeight != null && typeof inc === "number") {
           nextWeight = lastWeight + inc;
         }
 
@@ -1303,357 +1218,8 @@
         targetSeriesInput.value = config.targetSeries || ex.initialSeries || ex.defaultSeries || "";
       }
 
-      actualWeightInput.value = "";
-      actualSeriesInput.value = "";
-
-      updateChartForExercise(exId);
-
-      const exSessions = getSessionsForExercise(exId);
-      chartHintEl.textContent = exSessions.length
-        ? "Chaque point correspond à une séance avec charge numérique."
-        : "Le graphe s'actualise dès qu'au moins une séance encodée existe.";
-    }
-
-    // =========================
-    // 8. Graphique
-    // =========================
-
-    function updateChartForExercise(exId) {
-      const ctx = document.getElementById("weightChart").getContext("2d");
-
-      if (!exId) {
-        if (chartInstance) {
-          chartInstance.destroy();
-          chartInstance = null;
-        }
-        return;
-      }
-
-      const ex = exercises.find(e => e.id === exId);
-      const list = getSessionsForExercise(exId);
-
-      const labels = [];
-      const data = [];
-
-      list.forEach(s => {
-        const d = new Date(s.date);
-        const label = d.toLocaleDateString("fr-BE", { day: "2-digit", month: "2-digit" });
-
-        let val = s.actualWeight ?? s.targetWeight ?? null;
-
-        if (ex.unit === "Pdc" || typeof val !== "number" || isNaN(val)) {
-          val = null;
-        }
-
-        if (val != null) {
-          labels.push(label);
-          data.push(val);
-        }
-      });
-
-      if (chartInstance) {
-        chartInstance.destroy();
-        chartInstance = null;
-      }
-
-      if (!data.length) return;
-
-      chartInstance = new Chart(ctx, {
-        type: "line",
-        data: {
-          labels,
-          datasets: [
-            {
-              label: "Charge",
-              data,
-              tension: 0.3,
-              pointRadius: 4,
-              pointHoverRadius: 6
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: {
-              ticks: { color: "#9ca3af" },
-              grid: { color: "rgba(31,41,55,0.4)" }
-            },
-            y: {
-              ticks: { color: "#9ca3af" },
-              grid: { color: "rgba(31,41,55,0.4)" }
-            }
-          },
-          plugins: {
-            legend: {
-              labels: { color: "#e5e7eb" }
-            }
-          }
-        }
-      });
-    }
-
-    // =========================
-    // 9. Sauvegarde séance
-    // =========================
-
-    function setupSaveButton() {
-      const saveButton = document.getElementById("saveButton");
-      const infoMessageEl = document.getElementById("infoMessage");
-
-      saveButton.addEventListener("click", () => {
-        if (!currentExerciseId) return;
-
-        const ex = exercises.find(e => e.id === currentExerciseId);
-        if (!ex || !ex.track) return;
-
-        const targetWeightInput = document.getElementById("targetWeightInput");
-        const targetSeriesInput = document.getElementById("targetSeriesInput");
-        const actualWeightInput = document.getElementById("actualWeightInput");
-        const actualSeriesInput = document.getElementById("actualSeriesInput");
-
-        const targetWeightNum = parseNumeric(targetWeightInput.value);
-        const actualWeightNum = parseNumeric(actualWeightInput.value);
-        const targetSeries = (targetSeriesInput.value || "").trim() || null;
-        const actualSeries = (actualSeriesInput.value || "").trim() || null;
-
-        const last = getLastSession(currentExerciseId);
-        const lastWeight = last ? (last.actualWeight ?? last.targetWeight ?? null) : null;
-        const lastSeries = last ? (last.actualSeries ?? last.targetSeries ?? null) : null;
-
-        const sess = {
-          id: Date.now().toString() + "-" + Math.random().toString(16).slice(2),
-          exerciseId: currentExerciseId,
-          date: new Date().toISOString(),
-          lastWeekWeight: lastWeight,
-          lastWeekSeries: lastSeries,
-          targetWeight: isNaN(targetWeightNum) ? null : targetWeightNum,
-          targetSeries,
-          actualWeight: isNaN(actualWeightNum) ? null : actualWeightNum,
-          actualSeries
-        };
-
-        sessions.push(sess);
-        saveSessions();
-        loadExerciseDetail(currentExerciseId);
-
-        infoMessageEl.textContent = "Séance enregistrée ✅";
-        setTimeout(() => {
-          infoMessageEl.textContent = "";
-        }, 2500);
-      });
-    }
-
-    // =========================
-    // 10. Résumé semaine
-    // =========================
-
-    function setupWeekSummaryButton() {
-      const button = document.getElementById("weekSummaryButton");
-      const card = document.getElementById("weekSummaryCard");
-      const content = document.getElementById("weekSummaryContent");
-      const info = document.getElementById("weekSummaryInfo");
-
-      button.addEventListener("click", () => {
-        const now = new Date();
-        const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-
-        const recent = sessions.filter(
-          s => new Date(s.date) >= sevenDaysAgo &&
-          !(typeof s.id === "string" && s.id.startsWith("baseline-"))
-        );
-
-        if (!recent.length) {
-          card.style.display = "block";
-          info.textContent = "Aucune séance encodée sur les 7 derniers jours.";
-          content.innerHTML = "";
-          card.scrollIntoView({ behavior: "smooth", block: "start" });
-          return;
-        }
-
-        const byExercise = {};
-        recent.forEach(s => {
-          if (!byExercise[s.exerciseId]) byExercise[s.exerciseId] = [];
-          byExercise[s.exerciseId].push(s);
-        });
-
-        let totalSessions = 0;
-        let totalExercises = 0;
-        let html = `<ul class="summary-list">`;
-
-        Object.keys(byExercise).forEach(exId => {
-          const ex = exercises.find(e => e.id === exId);
-          if (!ex || !ex.track) return;
-
-          const allForEx = getSessionsForExercise(exId);
-          if (!allForEx.length) return;
-
-          const last = allForEx[allForEx.length - 1];
-          const prev = allForEx.length >= 2 ? allForEx[allForEx.length - 2] : null;
-
-          const lastWeight = typeof last.actualWeight === "number" && !isNaN(last.actualWeight)
-            ? last.actualWeight
-            : typeof last.targetWeight === "number" && !isNaN(last.targetWeight)
-              ? last.targetWeight
-              : null;
-
-          const prevWeight = prev
-            ? typeof prev.actualWeight === "number" && !isNaN(prev.actualWeight)
-              ? prev.actualWeight
-              : typeof prev.targetWeight === "number" && !isNaN(prev.targetWeight)
-                ? prev.targetWeight
-                : null
-            : null;
-
-          let deltaText = "";
-          if (lastWeight != null && prevWeight != null && ex.unit !== "Pdc") {
-            const delta = lastWeight - prevWeight;
-            if (Math.abs(delta) < 0.01) deltaText = " (↔ stable)";
-            else if (delta > 0) deltaText = ` (+${delta.toFixed(1)} vs séance précédente)`;
-            else deltaText = ` (${delta.toFixed(1)} vs séance précédente)`;
-          }
-
-          totalExercises++;
-          totalSessions += byExercise[exId].length;
-
-          html += `
-            <li>
-              <span><strong>${ex.name}</strong></span>
-              <span>${formatValueWithUnit(lastWeight, ex)}${deltaText}</span>
-            </li>
-          `;
-        });
-
-        html += "</ul>";
-
-        if (totalExercises === 0) {
-          info.textContent = "Aucun exercice tracké encodé sur les 7 derniers jours.";
-          content.innerHTML = "";
-        } else {
-          info.textContent = "Résumé des 7 derniers jours sur les exercices trackés.";
-          content.innerHTML =
-            `<p style="margin:0 0 0.4rem;" class="muted">Sessions trackées : <strong>${totalSessions}</strong> · Exercices trackés : <strong>${totalExercises}</strong></p>` +
-            html;
-        }
-
-        card.style.display = "block";
-        card.scrollIntoView({ behavior: "smooth", block: "start" });
-      });
-    }
-
-    // =========================
-    // 11. Paramètres évolution
-    // =========================
-
-    function setupEvolutionConfigSection() {
-      const sessionSelect = document.getElementById("configSessionFilter");
-      const exerciseSelect = document.getElementById("configExerciseSelect");
-      const incrementInput = document.getElementById("incrementKgInput");
-      const targetSeriesInput = document.getElementById("configTargetSeriesInput");
-      const saveButton = document.getElementById("saveEvolutionConfigButton");
-      const infoEl = document.getElementById("evolutionConfigInfo");
-
-      const blocks = getBlocks();
-      sessionSelect.innerHTML = "";
-
-      blocks.forEach(block => {
-        const opt = document.createElement("option");
-        opt.value = block;
-        opt.textContent = block;
-        sessionSelect.appendChild(opt);
-      });
-
-      function populate(block) {
-        exerciseSelect.innerHTML = "";
-
-        const filtered = exercises.filter(e => e.block === block && e.track);
-
-        filtered.forEach(ex => {
-          const opt = document.createElement("option");
-          opt.value = ex.id;
-          opt.textContent = ex.name;
-          exerciseSelect.appendChild(opt);
-        });
-
-        if (filtered.length) {
-          exerciseSelect.value = filtered[0].id;
-          loadConfigForSelected();
-        } else {
-          incrementInput.value = "";
-          targetSeriesInput.value = "";
-        }
-      }
-
-      function loadConfigForSelected() {
-        const exId = exerciseSelect.value;
-        if (!exId) return;
-
-        const conf = getEvolutionConfigFor(exId);
-        incrementInput.value = conf.increment != null ? String(conf.increment).replace(".", ",") : "";
-        targetSeriesInput.value = conf.targetSeries || "";
-        infoEl.textContent = "";
-      }
-
-      sessionSelect.addEventListener("change", () => populate(sessionSelect.value));
-      exerciseSelect.addEventListener("change", loadConfigForSelected);
-
-      saveButton.addEventListener("click", () => {
-        const exId = exerciseSelect.value;
-        if (!exId) return;
-
-        const incVal = parseNumeric(incrementInput.value);
-        const targetSeries = (targetSeriesInput.value || "").trim() || null;
-
-        evolutionConfig[exId] = {
-          increment: isNaN(incVal) ? null : incVal,
-          targetSeries
-        };
-
-        saveEvolutionConfig();
-
-        infoEl.textContent = "Paramètres enregistrés ✅";
-        setTimeout(() => {
-          infoEl.textContent = "";
-        }, 2500);
-
-        if (exId === currentExerciseId) {
-          loadExerciseDetail(exId);
-        }
-      });
-
-      if (blocks.length) {
-        sessionSelect.value = blocks[0];
-        populate(blocks[0]);
-      }
-    }
-
-    // =========================
-    // 12. Visualiser séance
-    // =========================
-
-    function setupWorkoutPlanSection() {
-      const sessionSelect = document.getElementById("planSessionFilter");
-      const content = document.getElementById("planContent");
-      const blocks = getBlocks();
-
-      sessionSelect.innerHTML = "";
-
-      blocks.forEach(block => {
-        const opt = document.createElement("option");
-        opt.value = block;
-        opt.textContent = block;
-        sessionSelect.appendChild(opt);
-      });
-
-      sessionSelect.addEventListener("change", () => renderWorkoutPlan(sessionSelect.value));
-
-      if (blocks.length) {
-        sessionSelect.value = blocks[0];
-        renderWorkoutPlan(blocks[0]);
-      } else {
-        content.innerHTML = "<p class='muted'>Aucune séance définie.</p>";
-      }
+      document.getElementById("actualWeightInput").value = "";
+      document.getElementById("actualSeriesInput").value = "";
     }
 
     function renderWorkoutPlan(block) {
@@ -1683,16 +1249,14 @@
 
         const conf = getEvolutionConfigFor(ex.id);
         const inc = conf.increment != null ? conf.increment : 2.5;
-        let suggestedWeight = null;
 
-        if (!ex.track) {
-          suggestedWeight = null;
-        } else if (ex.unit === "Pdc") {
-          suggestedWeight = null;
-        } else if (lastWeight != null && typeof inc === "number") {
-          suggestedWeight = lastWeight + inc;
-        } else if (ex.initialLoad != null && typeof inc === "number") {
-          suggestedWeight = ex.initialLoad + inc;
+        let suggestedWeight = null;
+        if (ex.track && ex.unit !== "Pdc") {
+          if (lastWeight != null && typeof inc === "number") {
+            suggestedWeight = lastWeight + inc;
+          } else if (ex.initialLoad != null && typeof inc === "number") {
+            suggestedWeight = ex.initialLoad + inc;
+          }
         }
 
         const weightText = !ex.track ? "non tracké" : formatValueWithUnit(suggestedWeight, ex);
@@ -1709,24 +1273,233 @@
       content.innerHTML = html;
     }
 
+    function populateConfigExerciseSelect(block) {
+      const exerciseSelect = document.getElementById("configExerciseSelect");
+      exerciseSelect.innerHTML = "";
+
+      const filtered = exercises.filter(e => e.block === block && e.track);
+
+      filtered.forEach(ex => {
+        const opt = document.createElement("option");
+        opt.value = ex.id;
+        opt.textContent = ex.name;
+        exerciseSelect.appendChild(opt);
+      });
+
+      if (filtered.length) {
+        exerciseSelect.value = filtered[0].id;
+        loadConfigForSelected();
+      } else {
+        document.getElementById("incrementKgInput").value = "";
+        document.getElementById("configTargetSeriesInput").value = "";
+      }
+    }
+
+    function loadConfigForSelected() {
+      const exId = document.getElementById("configExerciseSelect").value;
+      const conf = getEvolutionConfigFor(exId);
+
+      document.getElementById("incrementKgInput").value =
+        conf.increment != null ? String(conf.increment).replace(".", ",") : "";
+
+      document.getElementById("configTargetSeriesInput").value =
+        conf.targetSeries || "";
+
+      document.getElementById("evolutionConfigInfo").textContent = "";
+    }
+
     // =========================
-    // 13. Nutrition
+    // 7. Actions sport
+    // =========================
+
+    function setupSportEvents() {
+      document.getElementById("sessionFilter").addEventListener("change", e => {
+        populateExerciseSelect(e.target.value);
+      });
+
+      document.getElementById("exerciseSelect").addEventListener("change", e => {
+        currentExerciseId = e.target.value;
+        loadExerciseDetail(currentExerciseId);
+      });
+
+      document.getElementById("planSessionFilter").addEventListener("change", e => {
+        renderWorkoutPlan(e.target.value);
+      });
+
+      document.getElementById("configSessionFilter").addEventListener("change", e => {
+        populateConfigExerciseSelect(e.target.value);
+      });
+
+      document.getElementById("configExerciseSelect").addEventListener("change", () => {
+        loadConfigForSelected();
+      });
+
+      document.getElementById("saveButton").addEventListener("click", () => {
+        if (!currentExerciseId) return;
+
+        const ex = exercises.find(e => e.id === currentExerciseId);
+        if (!ex || !ex.track) return;
+
+        const targetWeightNum = parseNumeric(document.getElementById("targetWeightInput").value);
+        const actualWeightNum = parseNumeric(document.getElementById("actualWeightInput").value);
+
+        const targetSeries = document.getElementById("targetSeriesInput").value.trim() || null;
+        const actualSeries = document.getElementById("actualSeriesInput").value.trim() || null;
+
+        const last = getLastSession(currentExerciseId);
+
+        sessions.push({
+          id: Date.now().toString() + "-" + Math.random().toString(16).slice(2),
+          exerciseId: currentExerciseId,
+          date: new Date().toISOString(),
+          lastWeekWeight: last ? (last.actualWeight ?? last.targetWeight ?? null) : null,
+          lastWeekSeries: last ? (last.actualSeries ?? last.targetSeries ?? null) : null,
+          targetWeight: isNaN(targetWeightNum) ? null : targetWeightNum,
+          targetSeries,
+          actualWeight: isNaN(actualWeightNum) ? null : actualWeightNum,
+          actualSeries
+        });
+
+        saveSessions();
+        loadExerciseDetail(currentExerciseId);
+        renderWorkoutPlan(document.getElementById("planSessionFilter").value);
+
+        const info = document.getElementById("infoMessage");
+        info.textContent = "Séance enregistrée ✅";
+        setTimeout(() => {
+          info.textContent = "";
+        }, 2500);
+      });
+
+      document.getElementById("weekSummaryButton").addEventListener("click", renderWeekSummary);
+
+      document.getElementById("saveEvolutionConfigButton").addEventListener("click", () => {
+        const exId = document.getElementById("configExerciseSelect").value;
+        if (!exId) return;
+
+        const incVal = parseNumeric(document.getElementById("incrementKgInput").value);
+        const targetSeries = document.getElementById("configTargetSeriesInput").value.trim() || null;
+
+        evolutionConfig[exId] = {
+          increment: isNaN(incVal) ? null : incVal,
+          targetSeries
+        };
+
+        saveEvolutionConfig();
+
+        if (exId === currentExerciseId) {
+          loadExerciseDetail(exId);
+        }
+
+        renderWorkoutPlan(document.getElementById("planSessionFilter").value);
+
+        const info = document.getElementById("evolutionConfigInfo");
+        info.textContent = "Paramètres enregistrés ✅";
+        setTimeout(() => {
+          info.textContent = "";
+        }, 2500);
+      });
+
+      document.getElementById("toggleSportProgramEditor").addEventListener("click", () => {
+        const card = document.getElementById("sportProgramEditorCard");
+        const textarea = document.getElementById("sportProgramTextarea");
+
+        const hidden = card.style.display === "none" || card.style.display === "";
+
+        if (hidden) {
+          textarea.value = serializeExercisesForEditor(exercises);
+          card.style.display = "block";
+          card.scrollIntoView({ behavior: "smooth", block: "start" });
+        } else {
+          card.style.display = "none";
+        }
+      });
+
+      document.getElementById("saveSportProgramButton").addEventListener("click", saveSportProgramFromTextarea);
+      document.getElementById("resetSportProgramButton").addEventListener("click", resetSportProgramToDefault);
+    }
+
+    function renderWeekSummary() {
+      const card = document.getElementById("weekSummaryCard");
+      const content = document.getElementById("weekSummaryContent");
+      const info = document.getElementById("weekSummaryInfo");
+
+      const now = new Date();
+      const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+      const recent = sessions.filter(
+        s => new Date(s.date) >= sevenDaysAgo &&
+        !(typeof s.id === "string" && s.id.startsWith("baseline-"))
+      );
+
+      if (!recent.length) {
+        card.style.display = "block";
+        info.textContent = "Aucune séance encodée sur les 7 derniers jours.";
+        content.innerHTML = "";
+        card.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+
+      const byExercise = {};
+      recent.forEach(s => {
+        if (!byExercise[s.exerciseId]) byExercise[s.exerciseId] = [];
+        byExercise[s.exerciseId].push(s);
+      });
+
+      let html = "<ul class='summary-list'>";
+      let totalExercises = 0;
+
+      Object.keys(byExercise).forEach(exId => {
+        const ex = exercises.find(e => e.id === exId);
+        if (!ex || !ex.track) return;
+
+        const allForEx = getSessionsForExercise(exId);
+        if (!allForEx.length) return;
+
+        const last = allForEx[allForEx.length - 1];
+
+        const lastWeight =
+          typeof last.actualWeight === "number" && !isNaN(last.actualWeight)
+            ? last.actualWeight
+            : typeof last.targetWeight === "number" && !isNaN(last.targetWeight)
+              ? last.targetWeight
+              : null;
+
+        totalExercises++;
+
+        html += `
+          <li>
+            <span><strong>${ex.name}</strong></span>
+            <span>${formatValueWithUnit(lastWeight, ex)} · ${last.actualSeries || last.targetSeries || "-"}</span>
+          </li>
+        `;
+      });
+
+      html += "</ul>";
+
+      card.style.display = "block";
+      info.textContent = `Résumé des 7 derniers jours · ${totalExercises} exercice(s) tracké(s).`;
+      content.innerHTML = html;
+      card.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    // =========================
+    // 8. Nutrition
     // =========================
 
     function loadNutritionPlan() {
       try {
         const raw = localStorage.getItem(NUTRITION_PLAN_KEY);
+
         if (!raw) {
           nutritionPlan = deepClone(DEFAULT_NUTRITION_PLAN);
           return;
         }
 
         const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length) {
-          nutritionPlan = parsed;
-        } else {
-          nutritionPlan = deepClone(DEFAULT_NUTRITION_PLAN);
-        }
+        nutritionPlan = Array.isArray(parsed) && parsed.length
+          ? parsed
+          : deepClone(DEFAULT_NUTRITION_PLAN);
       } catch (e) {
         nutritionPlan = deepClone(DEFAULT_NUTRITION_PLAN);
       }
@@ -1737,8 +1510,7 @@
     }
 
     function getTodayStr() {
-      const now = new Date();
-      return now.toISOString().slice(0, 10);
+      return new Date().toISOString().slice(0, 10);
     }
 
     function resetNutritionStateForToday() {
@@ -1746,7 +1518,8 @@
         date: getTodayStr(),
         checked: {}
       };
-      saveNutritionState();
+
+      localStorage.setItem(NUTRITION_STATE_KEY, JSON.stringify(nutritionState));
     }
 
     function loadNutritionState() {
@@ -1754,12 +1527,14 @@
 
       try {
         const raw = localStorage.getItem(NUTRITION_STATE_KEY);
+
         if (!raw) {
           resetNutritionStateForToday();
           return;
         }
 
         const parsed = JSON.parse(raw);
+
         if (parsed && parsed.date === today && parsed.checked) {
           nutritionState = parsed;
         } else {
@@ -1770,21 +1545,16 @@
       }
     }
 
-    function saveNutritionState() {
-      localStorage.setItem(NUTRITION_STATE_KEY, JSON.stringify(nutritionState));
-    }
-
     function renderNutritionTable() {
       const tbody = document.getElementById("nutritionTableBody");
-      if (!tbody) return;
-
       tbody.innerHTML = "";
 
       nutritionPlan.forEach((item, index) => {
-        const id = item.id || ("n-" + index);
+        const id = item.id || "n-" + index;
         item.id = id;
 
         const tr = document.createElement("tr");
+
         tr.innerHTML = `
           <td>${item.time}</td>
           <td>${item.element}</td>
@@ -1794,17 +1564,17 @@
             <input type="checkbox" class="nutrition-checkbox" data-item-id="${id}">
           </td>
         `;
+
         tbody.appendChild(tr);
       });
 
       tbody.querySelectorAll(".nutrition-checkbox").forEach(cb => {
         const id = cb.dataset.itemId;
-        cb.checked = !!(nutritionState.checked && nutritionState.checked[id]);
+        cb.checked = !!nutritionState.checked[id];
 
         cb.addEventListener("change", () => {
-          if (!nutritionState.checked) nutritionState.checked = {};
           nutritionState.checked[id] = cb.checked;
-          saveNutritionState();
+          localStorage.setItem(NUTRITION_STATE_KEY, JSON.stringify(nutritionState));
         });
       });
 
@@ -1812,15 +1582,13 @@
     }
 
     function updateNutritionTotalKcal() {
-      const el = document.getElementById("nutritionTotalKcalText");
-      if (!el) return;
-
-      const total = nutritionPlan.reduce((sum, it) => {
-        const n = typeof it.kcal === "number" ? it.kcal : parseFloat(it.kcal);
+      const total = nutritionPlan.reduce((sum, item) => {
+        const n = typeof item.kcal === "number" ? item.kcal : parseFloat(item.kcal);
         return sum + (isNaN(n) ? 0 : n);
       }, 0);
 
-      el.textContent = `Apport théorique : ${total} kcal`;
+      document.getElementById("nutritionTotalKcalText").textContent =
+        `Apport théorique : ${total} kcal`;
     }
 
     function nutritionPlanToEditorText() {
@@ -1859,25 +1627,15 @@
       return res;
     }
 
-    function setupNutritionProgramEditor() {
-      const toggleBtn = document.getElementById("toggleNutritionProgramEditor");
-      const editor = document.getElementById("nutritionProgramEditor");
-      const textarea = document.getElementById("nutritionProgramTextarea");
-      const saveBtn = document.getElementById("saveNutritionProgramButton");
-      const resetBtn = document.getElementById("resetNutritionProgramButton");
-      const infoEl = document.getElementById("nutritionProgramInfo");
+    function setupNutritionEvents() {
+      document.getElementById("toggleNutritionProgramEditor").addEventListener("click", () => {
+        const editor = document.getElementById("nutritionProgramEditor");
+        const textarea = document.getElementById("nutritionProgramTextarea");
 
-      if (!toggleBtn || !editor || !textarea) return;
+        const hidden = editor.style.display === "none" || editor.style.display === "";
 
-      function refreshTextarea() {
-        textarea.value = nutritionPlanToEditorText();
-      }
-
-      toggleBtn.addEventListener("click", () => {
-        const isHidden = editor.style.display === "none" || editor.style.display === "";
-
-        if (isHidden) {
-          refreshTextarea();
+        if (hidden) {
+          textarea.value = nutritionPlanToEditorText();
           editor.style.display = "block";
           editor.scrollIntoView({ behavior: "smooth", block: "start" });
         } else {
@@ -1885,12 +1643,13 @@
         }
       });
 
-      saveBtn.addEventListener("click", () => {
-        const text = textarea.value || "";
-        const parsed = parseNutritionPlanFromEditor(text);
+      document.getElementById("saveNutritionProgramButton").addEventListener("click", () => {
+        const textarea = document.getElementById("nutritionProgramTextarea");
+        const info = document.getElementById("nutritionProgramInfo");
+        const parsed = parseNutritionPlanFromEditor(textarea.value || "");
 
         if (!parsed.length) {
-          infoEl.textContent = "Format incorrect : au moins 3 colonnes par ligne.";
+          info.textContent = "Format incorrect : au moins 3 colonnes par ligne.";
           return;
         }
 
@@ -1899,41 +1658,37 @@
         resetNutritionStateForToday();
         renderNutritionTable();
 
-        infoEl.textContent = "Programme nutrition enregistré ✅";
+        info.textContent = "Programme nutrition enregistré ✅";
         setTimeout(() => {
-          infoEl.textContent = "";
+          info.textContent = "";
         }, 2500);
       });
 
-      resetBtn.addEventListener("click", () => {
+      document.getElementById("resetNutritionProgramButton").addEventListener("click", () => {
+        const textarea = document.getElementById("nutritionProgramTextarea");
+        const info = document.getElementById("nutritionProgramInfo");
+
         nutritionPlan = deepClone(DEFAULT_NUTRITION_PLAN);
         saveNutritionPlan();
         resetNutritionStateForToday();
         renderNutritionTable();
 
-        infoEl.textContent = "Programme nutrition remis par défaut ✅";
+        textarea.value = nutritionPlanToEditorText();
+
+        info.textContent = "Programme nutrition remis par défaut ✅";
         setTimeout(() => {
-          infoEl.textContent = "";
+          info.textContent = "";
         }, 2500);
       });
     }
 
-    function initNutritionSection() {
-      loadNutritionPlan();
-      loadNutritionState();
-      renderNutritionTable();
-      setupNutritionProgramEditor();
-    }
-
     // =========================
-    // 14. Mode Sport / Nutrition
+    // 9. Mode Sport / Nutrition
     // =========================
 
     function setMode(mode) {
       const sportView = document.getElementById("sportView");
       const nutritionView = document.getElementById("nutritionView");
-
-      if (!sportView || !nutritionView) return;
 
       if (mode === "nutrition") {
         sportView.style.display = "none";
@@ -1953,14 +1708,13 @@
     function setupModeSwitch() {
       document.querySelectorAll(".mode-btn").forEach(btn => {
         btn.addEventListener("click", () => {
-          const mode = btn.dataset.mode || "sport";
-          setMode(mode);
+          setMode(btn.dataset.mode || "sport");
         });
       });
     }
 
     // =========================
-    // 15. Init globale
+    // 10. Init
     // =========================
 
     function init() {
@@ -1968,18 +1722,16 @@
       loadSessions();
       loadEvolutionConfig();
       seedBaselineIfEmpty();
-      updateGlobalStats();
 
-      initFilters();
-      setupSaveButton();
-      setupWeekSummaryButton();
-      setupEvolutionConfigSection();
-      setupWorkoutPlanSection();
-      setupSportProgramEditor();
+      refreshSportUI();
+      setupSportEvents();
+
+      loadNutritionPlan();
+      loadNutritionState();
+      renderNutritionTable();
+      setupNutritionEvents();
 
       setupModeSwitch();
-      initNutritionSection();
-
       setMode("sport");
     }
 
