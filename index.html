@@ -5,7 +5,6 @@
   <title>MyTracker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
@@ -40,8 +39,6 @@
     body {
       min-height: 100vh;
     }
-
-    /* HEADER */
 
     header {
       position: sticky;
@@ -143,8 +140,6 @@
       box-shadow: 0 10px 24px rgba(37, 99, 235, 0.45);
     }
 
-    /* LAYOUT */
-
     main {
       max-width: 1120px;
       margin: 0 auto;
@@ -158,8 +153,6 @@
       font-size: 0.8rem;
       color: var(--muted-soft);
     }
-
-    /* CARDS */
 
     .card {
       background: radial-gradient(circle at top left, rgba(46, 16, 101, 0.10), transparent 55%),
@@ -203,8 +196,6 @@
       color: var(--muted-soft);
       margin-top: 0.15rem;
     }
-
-    /* FORM / INPUTS */
 
     .field-label {
       font-size: 0.8rem;
@@ -254,8 +245,6 @@
       flex: 1 1 0;
       min-width: 150px;
     }
-
-    /* BUTTONS */
 
     button {
       display: inline-flex;
@@ -309,8 +298,6 @@
       color: var(--accent);
     }
 
-    /* BADGES */
-
     .badge {
       display: inline-flex;
       align-items: center;
@@ -350,8 +337,6 @@
       margin-bottom: 0.4rem;
     }
 
-    /* LISTES */
-
     ul.summary-list {
       list-style: none;
       padding-left: 0;
@@ -376,8 +361,6 @@
     ul.summary-list strong {
       font-weight: 500;
     }
-
-    /* KPI */
 
     .kpi-card {
       padding: 0.8rem 0.9rem;
@@ -411,8 +394,6 @@
       font-weight: 600;
     }
 
-    /* GRIDS */
-
     .top-grid {
       display: grid;
       grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.9fr);
@@ -427,16 +408,12 @@
       align-items: flex-start;
     }
 
-    /* CHART */
-
     canvas {
       background: rgba(15, 23, 42, 0.9);
       border-radius: 0.85rem;
       border: 1px solid rgba(15, 23, 42, 0.9);
       padding: 0.4rem;
     }
-
-    /* NUTRITION TABLE */
 
     .nutrition-table-wrapper {
       margin-top: 0.5rem;
@@ -493,8 +470,6 @@
       resize: vertical;
     }
 
-    /* RESPONSIVE */
-
     @media (max-width: 900px) {
       .app-bar {
         flex-direction: column;
@@ -525,6 +500,7 @@
     }
   </style>
 </head>
+
 <body>
   <header>
     <div class="app-bar">
@@ -549,9 +525,7 @@
   </header>
 
   <main>
-    <!-- =================== VUE SPORT =================== -->
     <div id="sportView">
-      <!-- DASHBOARD GLOBAL -->
       <section class="card kpi-card">
         <div class="card-header-title">
           <div class="section-title">Vue d’ensemble</div>
@@ -572,9 +546,7 @@
         </div>
       </section>
 
-      <!-- TOP GRID: PLAN + CHOIX SÉANCE/EXO -->
       <section class="top-grid">
-        <!-- 1) Visualiser ma séance -->
         <div class="card">
           <div class="card-header-title">
             <div>
@@ -594,7 +566,6 @@
           <div id="planContent" class="muted"></div>
         </div>
 
-        <!-- 2) Choix séance / exo + bouton résumé semaine -->
         <div class="card">
           <div class="card-header-title">
             <div>
@@ -622,7 +593,6 @@
         </div>
       </section>
 
-      <!-- Résumé de la semaine -->
       <section class="card" id="weekSummaryCard" style="display:none;">
         <div class="card-header-title">
           <div>
@@ -635,9 +605,7 @@
         <div id="weekSummaryContent" class="muted"></div>
       </section>
 
-      <!-- LAYOUT PRINCIPAL: INFOS EXO + ENCODAGE / GRAPH -->
       <section class="layout">
-        <!-- 3) Infos exo + plan auto -->
         <div class="card" id="exerciseInfoCard">
           <div class="badge" id="exerciseBlock">Séance</div>
           <h2 id="exerciseName">Exercice</h2>
@@ -646,7 +614,7 @@
           </div>
 
           <div id="nonTrackedNotice" class="muted" style="display:none; margin-top:0.4rem;">
-            Cet exercice n’est pas tracké (échauffement / mobilité / natation).
+            Cet exercice n’est pas tracké.
           </div>
 
           <div id="trackedSection">
@@ -699,7 +667,6 @@
           </div>
         </div>
 
-        <!-- 4) Encodage de la séance + graphique -->
         <div class="card" id="sessionCard">
           <div class="card-header-title">
             <div>
@@ -711,14 +678,14 @@
           </div>
 
           <div id="nonTrackedInputsNotice" class="muted" style="display:none;">
-            Encodage désactivé pour cet exercice (non tracké).
+            Encodage désactivé pour cet exercice non tracké.
           </div>
 
           <div id="trackedInputs">
             <div class="row">
               <div class="col-2">
                 <div class="field-label">Charge réelle</div>
-                <input type="text" id="actualWeightInput" placeholder="ex: 62.5, 2, Pdc..." />
+                <input type="text" id="actualWeightInput" placeholder="ex: 62.5, modéré, Pdc..." />
               </div>
               <div class="col-2">
                 <div class="field-label">Séries / reps réelles</div>
@@ -744,7 +711,6 @@
         </div>
       </section>
 
-      <!-- 5) Paramètres d’évolution -->
       <section class="card">
         <div class="card-header-title">
           <div>
@@ -768,8 +734,8 @@
 
         <div class="row" style="margin-top:0.8rem;">
           <div class="col-2">
-            <div class="field-label">Incrément de charge (par séance)</div>
-            <input type="text" id="incrementKgInput" placeholder="ex: 2.5, 1 (niveau)" />
+            <div class="field-label">Incrément de charge</div>
+            <input type="text" id="incrementKgInput" placeholder="ex: 2.5" />
           </div>
           <div class="col-2">
             <div class="field-label">Objectif séries / reps</div>
@@ -783,7 +749,6 @@
         <div class="info-message" id="evolutionConfigInfo"></div>
       </section>
 
-      <!-- 6) Édition du programme sport -->
       <button id="toggleSportProgramEditor" class="btn-secondary">
         Modifier le programme sport
       </button>
@@ -793,7 +758,7 @@
           <div>
             <div class="section-title">Éditer le programme sport</div>
             <div class="section-subtitle">
-              Format&nbsp;: Séance;Exercice;Séries;Track(1 ou 0);Unité (kg / niveau / Pdc ou vide);Charge initiale;Séries initiales (optionnel).
+              Format : Séance;Exercice;Séries;Track(1 ou 0);Unité;Charge initiale;Séries initiales.
             </div>
           </div>
         </div>
@@ -810,7 +775,6 @@
       </section>
     </div>
 
-    <!-- =================== VUE NUTRITION =================== -->
     <section class="card" id="nutritionView" style="display:none;">
       <div class="card-header-title">
         <div>
@@ -844,7 +808,7 @@
 
       <div id="nutritionProgramEditor" style="display:none; margin-top:0.7rem;">
         <p class="muted" style="margin-bottom:0.35rem;">
-          Format&nbsp;: Heure;Élément;Détail;KCAL — une ligne par aliment / boisson.
+          Format : Heure;Élément;Détail;KCAL — une ligne par aliment / boisson.
         </p>
         <textarea id="nutritionProgramTextarea" class="program-textarea"></textarea>
         <div class="row" style="margin-top:0.6rem;">
@@ -862,80 +826,88 @@
 
   <script>
     // =========================
-    // 1. Données du programme sport (par défaut)
+    // 1. Programme sport par défaut
     // =========================
 
-    const SESSION_UPPER = "Upper + Hyrox light";
-    const SESSION_UPPER_VAR = "Upper variante + Hyrox light";
-    const SESSION_LEGS = "Legs + Natation";
+    const SESSION_PECS_KB = "Séance 1 — Pecs + Kettlebell";
+    const SESSION_DOS_NATATION = "Séance 2A — Dos + Natation";
+    const SESSION_DOS_KB_JAMBES = "Séance 2B — Dos + Kettlebell + Jambes";
 
-    // unit: "kg", "niveau", "Pdc"
-    // track: true = on tracke la charge
-    // initialSeries & initialLoad = valeurs de la "semaine 0"
     const DEFAULT_EXERCISES = [
-      // Upper + Hyrox light
-      { id: "upper-rameur", name: "Rameur", block: SESSION_UPPER, defaultSeries: "5 min", track: false, unit: null, initialSeries: "5 min", initialLoad: null },
-      { id: "upper-mobilite", name: "Mobilité", block: SESSION_UPPER, defaultSeries: "/", track: false, unit: null, initialSeries: "/", initialLoad: null },
-      { id: "upper-pompes", name: "Pompes", block: SESSION_UPPER, defaultSeries: "1x20", track: false, unit: null, initialSeries: "1x20", initialLoad: null },
+      // Séance 1 — Pecs + Kettlebell
+      { id: "s1-rameur", name: "Rameur", block: SESSION_PECS_KB, defaultSeries: "5 min", track: false, unit: null, initialSeries: "5 min", initialLoad: null },
+      { id: "s1-mobilite", name: "Mobilité épaules / thoracique", block: SESSION_PECS_KB, defaultSeries: "/ (libre)", track: false, unit: null, initialSeries: "/ (libre)", initialLoad: null },
+      { id: "s1-pompes", name: "Pompes", block: SESSION_PECS_KB, defaultSeries: "1 × 20", track: false, unit: "Pdc", initialSeries: "1 × 20", initialLoad: null },
 
-      { id: "upper-dev-assis", name: "Développé assis", block: SESSION_UPPER, defaultSeries: "4x6", track: true, unit: "kg", initialSeries: "4x6", initialLoad: 20 },
-      { id: "upper-lat-pulldown", name: "Lat pulldown", block: SESSION_UPPER, defaultSeries: "4x6–8", track: true, unit: "kg", initialSeries: "4x8", initialLoad: 40 },
-      { id: "upper-dev-epaules-assis", name: "Développé épaules assis", block: SESSION_UPPER, defaultSeries: "3x8–10", track: true, unit: "kg", initialSeries: "3x8", initialLoad: 10 },
-      { id: "upper-farmer-carry", name: "Farmer Carry", block: SESSION_UPPER, defaultSeries: "30–40 m", track: true, unit: "kg", initialSeries: "30–40 m", initialLoad: 20 },
-      { id: "upper-box-step-up", name: "Box step-up", block: SESSION_UPPER, defaultSeries: "8–10 / jambe", track: true, unit: "kg", initialSeries: "8–10 / jambe", initialLoad: 5 },
-      { id: "upper-med-ball-slams", name: "Med ball slams", block: SESSION_UPPER, defaultSeries: "10–12 reps", track: true, unit: "kg", initialSeries: "10–12 reps", initialLoad: 5 },
-      { id: "upper-skierg", name: "SkiErg", block: SESSION_UPPER, defaultSeries: "250 m tonique", track: true, unit: "niveau", initialSeries: "250 m", initialLoad: 2 },
-      { id: "upper-curl-poulie", name: "Curl poulie", block: SESSION_UPPER, defaultSeries: "2x10–12", track: true, unit: "kg", initialSeries: "2x10–12 reps", initialLoad: 15 },
-      { id: "upper-triceps-poulie", name: "Triceps poulie", block: SESSION_UPPER, defaultSeries: "2x10–12", track: true, unit: "kg", initialSeries: "2x10–12 reps", initialLoad: 15 },
+      { id: "s1-developpe-assis", name: "Développé assis (haltères/barre)", block: SESSION_PECS_KB, defaultSeries: "4 × 6–8", track: true, unit: "kg", initialSeries: "4 × 6–8", initialLoad: 32.5 },
+      { id: "s1-developpe-incline", name: "Développé incliné haltères", block: SESSION_PECS_KB, defaultSeries: "3 × 10–12", track: true, unit: "kg", initialSeries: "3 × 10–12", initialLoad: 20.5 },
+      { id: "s1-pec-deck", name: "Pec Deck", block: SESSION_PECS_KB, defaultSeries: "3 × 12–15", track: true, unit: "kg", initialSeries: "3 × 12–15", initialLoad: 20 },
 
-      // Upper variante + Hyrox light
-      { id: "uppervar-rameur", name: "Rameur", block: SESSION_UPPER_VAR, defaultSeries: "5 min", track: false, unit: null, initialSeries: "5 min", initialLoad: null },
-      { id: "uppervar-mobilite", name: "Mobilité", block: SESSION_UPPER_VAR, defaultSeries: "/", track: false, unit: null, initialSeries: "/", initialLoad: null },
-      { id: "uppervar-pompes", name: "Pompes", block: SESSION_UPPER_VAR, defaultSeries: "1x20", track: false, unit: null, initialSeries: "1x20", initialLoad: null },
+      { id: "s1-kb-swing", name: "KB Swing (deux mains)", block: SESSION_PECS_KB, defaultSeries: "4 × 15", track: true, unit: "kg", initialSeries: "4 × 15", initialLoad: null },
+      { id: "s1-kb-farmer-carry", name: "KB Farmer Carry", block: SESSION_PECS_KB, defaultSeries: "3 × 30–40 m", track: true, unit: "kg", initialSeries: "3 × 30–40 m", initialLoad: 18.5 },
+      { id: "s1-kb-goblet-squat", name: "KB Goblet Squat", block: SESSION_PECS_KB, defaultSeries: "3 × 12", track: true, unit: "kg", initialSeries: "3 × 12", initialLoad: null },
+      { id: "s1-kb-push-press", name: "KB Push Press (unilatéral)", block: SESSION_PECS_KB, defaultSeries: "3 × 8 / côté", track: true, unit: "kg", initialSeries: "3 × 8 / côté", initialLoad: null },
 
-      { id: "uppervar-dev-incline", name: "Développé incliné haltères", block: SESSION_UPPER_VAR, defaultSeries: "4x8–12", track: true, unit: "kg", initialSeries: "4x8–12", initialLoad: 12 },
-      { id: "uppervar-pec-deck", name: "Pec deck", block: SESSION_UPPER_VAR, defaultSeries: "3x12–15", track: true, unit: "kg", initialSeries: "3x12–15", initialLoad: 10 },
-      { id: "uppervar-row-machine", name: "Row machine", block: SESSION_UPPER_VAR, defaultSeries: "3x8–12", track: true, unit: "kg", initialSeries: "3x8–12", initialLoad: 20 },
-      { id: "uppervar-elev-laterales", name: "Élévations latérales", block: SESSION_UPPER_VAR, defaultSeries: "3x12–20", track: true, unit: "kg", initialSeries: "3x12–20", initialLoad: 5 },
-      { id: "uppervar-rameur-250", name: "Rameur 250 m", block: SESSION_UPPER_VAR, defaultSeries: "250 m", track: true, unit: "niveau", initialSeries: "250 m", initialLoad: 2 },
-      { id: "uppervar-walking-lunges", name: "Walking lunges", block: SESSION_UPPER_VAR, defaultSeries: "10–12 pas / jambe", track: true, unit: "Pdc", initialSeries: "10–12 pas / jambe", initialLoad: null },
-      { id: "uppervar-bike", name: "Bike modéré/rapide", block: SESSION_UPPER_VAR, defaultSeries: "1–2 min", track: true, unit: "niveau", initialSeries: "1–2 min", initialLoad: 2 },
-      { id: "uppervar-ext-lombaires", name: "Extensions lombaire", block: SESSION_UPPER_VAR, defaultSeries: "3x15", track: true, unit: "kg", initialSeries: "3x15", initialLoad: 10 },
-      { id: "uppervar-pallof-press", name: "Pallof press", block: SESSION_UPPER_VAR, defaultSeries: "3x15", track: true, unit: "kg", initialSeries: "3x15", initialLoad: 10 },
+      { id: "s1-triceps-poulie", name: "Triceps poulie", block: SESSION_PECS_KB, defaultSeries: "2 × 10–12", track: true, unit: "kg", initialSeries: "2 × 10–12", initialLoad: 22.5 },
 
-      // Legs + Natation
-      { id: "legs-velo-tranquille", name: "Vélo ou rameur tranquille", block: SESSION_LEGS, defaultSeries: "5 min", track: false, unit: null, initialSeries: "5 min", initialLoad: null },
-      { id: "legs-mobilite", name: "Mobilité", block: SESSION_LEGS, defaultSeries: "/", track: false, unit: null, initialSeries: "/", initialLoad: null },
-      { id: "legs-hip-thrust-leger", name: "Hip Thrust léger", block: SESSION_LEGS, defaultSeries: "2x10", track: true, unit: "kg", initialSeries: "2x10", initialLoad: 10 },
-      { id: "legs-hip-thrust", name: "Hip Thrust", block: SESSION_LEGS, defaultSeries: "4x6–8", track: true, unit: "kg", initialSeries: "4x6–8", initialLoad: 25 },
-      { id: "legs-leg-press", name: "Leg Press", block: SESSION_LEGS, defaultSeries: "3–4x8–12", track: true, unit: "kg", initialSeries: "3–4x8–12", initialLoad: 60 },
-      { id: "legs-leg-curl", name: "Leg Curl", block: SESSION_LEGS, defaultSeries: "3x10–12", track: true, unit: "kg", initialSeries: "3x10–12", initialLoad: 22.5 },
-      { id: "legs-nage-facile", name: "Nage facile (crawl/dos/brasse)", block: SESSION_LEGS, defaultSeries: "5–10 min", track: false, unit: null, initialSeries: "5–10 min", initialLoad: null },
-      { id: "legs-nage-moderee", name: "Nage rythme modéré", block: SESSION_LEGS, defaultSeries: "8–12x50 m (30 s)", track: false, unit: null, initialSeries: "8–12x50 m (30 s)", initialLoad: null },
-      { id: "legs-nage-calme", name: "Nage très tranquille en retour au calme", block: SESSION_LEGS, defaultSeries: "5–10 min", track: false, unit: null, initialSeries: "5–10 min", initialLoad: null }
+      // Séance 2A — Dos + Natation
+      { id: "s2a-rameur", name: "Rameur", block: SESSION_DOS_NATATION, defaultSeries: "5 min", track: false, unit: null, initialSeries: "5 min", initialLoad: null },
+      { id: "s2a-mobilite", name: "Mobilité épaules / thoracique", block: SESSION_DOS_NATATION, defaultSeries: "/ (libre)", track: false, unit: null, initialSeries: "/ (libre)", initialLoad: null },
+      { id: "s2a-pompes", name: "Pompes", block: SESSION_DOS_NATATION, defaultSeries: "1 × 20", track: false, unit: "Pdc", initialSeries: "1 × 20", initialLoad: null },
+
+      { id: "s2a-lat-pulldown", name: "Lat Pulldown", block: SESSION_DOS_NATATION, defaultSeries: "4 × 8", track: true, unit: "kg", initialSeries: "4 × 8", initialLoad: 57.5 },
+      { id: "s2a-row-machine", name: "Row Machine (tirage horizontal)", block: SESSION_DOS_NATATION, defaultSeries: "3 × 8–12", track: true, unit: "kg", initialSeries: "3 × 8–12", initialLoad: 30 },
+      { id: "s2a-developpe-epaules", name: "Développé épaules assis", block: SESSION_DOS_NATATION, defaultSeries: "3 × 8", track: true, unit: "kg", initialSeries: "3 × 8", initialLoad: 12 },
+      { id: "s2a-elevations-laterales", name: "Élévations latérales", block: SESSION_DOS_NATATION, defaultSeries: "3 × 12–20", track: true, unit: "kg", initialSeries: "3 × 12–20", initialLoad: 7.3 },
+
+      { id: "s2a-curl-poulie", name: "Curl poulie", block: SESSION_DOS_NATATION, defaultSeries: "2 × 10–12", track: true, unit: "kg", initialSeries: "2 × 10–12", initialLoad: 27.5 },
+
+      { id: "s2a-nage-facile", name: "Nage facile (crawl / dos / brasse)", block: SESSION_DOS_NATATION, defaultSeries: "5–10 min", track: false, unit: null, initialSeries: "5–10 min", initialLoad: null },
+      { id: "s2a-nage-moderee", name: "Nage rythme modéré", block: SESSION_DOS_NATATION, defaultSeries: "8–12 × 50 m (30 s repos)", track: false, unit: null, initialSeries: "8–12 × 50 m (30 s repos)", initialLoad: null },
+      { id: "s2a-retour-calme", name: "Retour au calme", block: SESSION_DOS_NATATION, defaultSeries: "5 min", track: false, unit: null, initialSeries: "5 min", initialLoad: null },
+
+      // Séance 2B — Dos + Kettlebell + Jambes
+      { id: "s2b-velo-rameur", name: "Vélo ou Rameur", block: SESSION_DOS_KB_JAMBES, defaultSeries: "5 min", track: false, unit: null, initialSeries: "5 min", initialLoad: null },
+      { id: "s2b-mobilite", name: "Mobilité hanche / thoracique", block: SESSION_DOS_KB_JAMBES, defaultSeries: "/ (libre)", track: false, unit: null, initialSeries: "/ (libre)", initialLoad: null },
+      { id: "s2b-hip-thrust-leger", name: "Hip Thrust léger (activation)", block: SESSION_DOS_KB_JAMBES, defaultSeries: "2 × 10", track: true, unit: "kg", initialSeries: "2 × 10", initialLoad: 12.5 },
+
+      { id: "s2b-lat-pulldown", name: "Lat Pulldown", block: SESSION_DOS_KB_JAMBES, defaultSeries: "4 × 8", track: true, unit: "kg", initialSeries: "4 × 8", initialLoad: 57.5 },
+      { id: "s2b-row-machine", name: "Row Machine (tirage horizontal)", block: SESSION_DOS_KB_JAMBES, defaultSeries: "3 × 8–12", track: true, unit: "kg", initialSeries: "3 × 8–12", initialLoad: 30 },
+      { id: "s2b-elevations-laterales", name: "Élévations latérales", block: SESSION_DOS_KB_JAMBES, defaultSeries: "3 × 12–20", track: true, unit: "kg", initialSeries: "3 × 12–20", initialLoad: 7.3 },
+
+      { id: "s2b-kb-swing", name: "KB Swing (deux mains)", block: SESSION_DOS_KB_JAMBES, defaultSeries: "4 × 15", track: true, unit: "kg", initialSeries: "4 × 15", initialLoad: null },
+      { id: "s2b-kb-goblet-squat", name: "KB Goblet Squat", block: SESSION_DOS_KB_JAMBES, defaultSeries: "3 × 12", track: true, unit: "kg", initialSeries: "3 × 12", initialLoad: null },
+
+      { id: "s2b-hip-thrust", name: "Hip Thrust", block: SESSION_DOS_KB_JAMBES, defaultSeries: "4 × 6–8", track: true, unit: "kg", initialSeries: "4 × 6–8", initialLoad: 27.5 },
+      { id: "s2b-leg-press", name: "Leg Press", block: SESSION_DOS_KB_JAMBES, defaultSeries: "3–4 × 8–12", track: true, unit: "kg", initialSeries: "3–4 × 8–12", initialLoad: 62.5 },
+      { id: "s2b-leg-curl", name: "Leg Curl", block: SESSION_DOS_KB_JAMBES, defaultSeries: "3 × 10–12", track: true, unit: "kg", initialSeries: "3 × 10–12", initialLoad: 25 },
+      { id: "s2b-extensions-lombaire", name: "Extensions lombaire", block: SESSION_DOS_KB_JAMBES, defaultSeries: "3 × 15", track: true, unit: "kg", initialSeries: "3 × 15", initialLoad: 12.5 },
+      { id: "s2b-pallof-press", name: "Pallof Press", block: SESSION_DOS_KB_JAMBES, defaultSeries: "3 × 15", track: true, unit: "kg", initialSeries: "3 × 15", initialLoad: 12.5 },
+
+      { id: "s2b-curl-poulie", name: "Curl poulie", block: SESSION_DOS_KB_JAMBES, defaultSeries: "2 × 10–12", track: true, unit: "kg", initialSeries: "2 × 10–12", initialLoad: 27.5 }
     ];
 
     // =========================
-    // 2. Données du programme nutrition (par défaut)
+    // 2. Programme nutrition par défaut
     // =========================
 
     const DEFAULT_NUTRITION_PLAN = [
-      { id: "n0", time: "7h",  element: "Tartine",        detail: "75 g de pain complet",                                           kcal: 190 },
-      { id: "n1", time: "7h",  element: "Tartine",        detail: "37 g de beurre de cacahuète / nocciolata",                       kcal: 225 },
-      { id: "n2", time: "7h",  element: "Boisson",        detail: "2 oranges pressées / verre de lait",                             kcal: 90 },
-      { id: "n3", time: "10h", element: "Fruit",          detail: "Au choix",                                                       kcal: 100 },
-      { id: "n4", time: "10h", element: "Gainer",         detail: "40 g de crème de riz",                                          kcal: 145 },
-      { id: "n5", time: "12h", element: "Repas midi",     detail: "60 g de riz basmati (non cuit)",                                kcal: 450 },
-      { id: "n6", time: "14h", element: "Petit goûter",   detail: "banane",                                                        kcal: 110 },
-      { id: "n7", time: "14h", element: "Petit goûter",   detail: "1 barre",                                                       kcal: 200 },
-      { id: "n8", time: "16h", element: "Mix fruits secs",detail: "60 g mélange noix/amandes/noisettes + raisins secs",           kcal: 450 },
-      { id: "n9", time: "19h", element: "Repas Papa",     detail: "Variable",                                                      kcal: 600 },
-      { id: "n10",time: "21h", element: "Dessert",        detail: "une part de gâteau",                                            kcal: 350 },
-      { id: "n11",time: "21h", element: "Yaourt & amande",detail: "1 yaourt blanc + 20 g d'amande en poudre",                      kcal: 300 }
+      { id: "n0", time: "7h", element: "Tartine", detail: "75 g de pain complet", kcal: 190 },
+      { id: "n1", time: "7h", element: "Tartine", detail: "37 g de beurre de cacahuète / nocciolata", kcal: 225 },
+      { id: "n2", time: "7h", element: "Boisson", detail: "2 oranges pressées / verre de lait", kcal: 90 },
+      { id: "n3", time: "10h", element: "Fruit", detail: "Au choix", kcal: 100 },
+      { id: "n4", time: "10h", element: "Gainer", detail: "40 g de crème de riz", kcal: 145 },
+      { id: "n5", time: "12h", element: "Repas midi", detail: "60 g de riz basmati (non cuit)", kcal: 450 },
+      { id: "n6", time: "14h", element: "Petit goûter", detail: "banane", kcal: 110 },
+      { id: "n7", time: "14h", element: "Petit goûter", detail: "1 barre", kcal: 200 },
+      { id: "n8", time: "16h", element: "Mix fruits secs", detail: "60 g mélange noix/amandes/noisettes + raisins secs", kcal: 450 },
+      { id: "n9", time: "19h", element: "Repas Papa", detail: "Variable", kcal: 600 },
+      { id: "n10", time: "21h", element: "Dessert", detail: "une part de gâteau", kcal: 350 },
+      { id: "n11", time: "21h", element: "Yaourt & amande", detail: "1 yaourt blanc + 20 g d'amande en poudre", kcal: 300 }
     ];
 
     // =========================
-    // 3. Storage keys & états
+    // 3. Storage
     // =========================
 
     const STORAGE_KEY = "hyrox_tracker_sessions_v1";
@@ -954,7 +926,7 @@
     let nutritionState = { date: null, checked: {} };
 
     // =========================
-    // 4. Utilitaires généraux
+    // 4. Utilitaires
     // =========================
 
     function deepClone(obj) {
@@ -1056,7 +1028,7 @@
     }
 
     // =========================
-    // 5. Chargement / édition du programme SPORT
+    // 5. Programme sport modifiable
     // =========================
 
     function serializeExercisesForEditor(exArray) {
@@ -1077,6 +1049,7 @@
         if (!raw || raw.startsWith("#")) return;
         const parts = raw.split(";");
         if (parts.length < 3) return;
+
         const block = parts[0].trim();
         const name = parts[1].trim();
         const defaultSeries = parts[2].trim() || "-";
@@ -1085,11 +1058,13 @@
         const unitRaw = (parts[4] || "").trim();
         const unit = unitRaw ? unitRaw : null;
         const loadRaw = (parts[5] || "").trim();
+
         let initialLoad = null;
         if (loadRaw) {
           const num = parseFloat(loadRaw.replace(",", "."));
           if (!isNaN(num)) initialLoad = num;
         }
+
         const initialSeries = (parts[6] || "").trim() || defaultSeries;
         const id = "ex-" + result.length;
         result.push({ id, name, block, defaultSeries, track, unit, initialSeries, initialLoad });
@@ -1103,6 +1078,7 @@
         exercises = deepClone(DEFAULT_EXERCISES);
         return;
       }
+
       const parsed = parseSportPlanText(storedText);
       if (parsed.length) {
         exercises = parsed;
@@ -1139,14 +1115,17 @@
       saveBtn.addEventListener("click", () => {
         const text = textarea.value || "";
         const parsed = parseSportPlanText(text);
+
         if (!parsed.length) {
-          infoEl.textContent = "Format incorrect : au moins 3 colonnes par ligne (Séance;Exercice;Séries...).";
+          infoEl.textContent = "Format incorrect : au moins 3 colonnes par ligne.";
           return;
         }
+
         localStorage.setItem(SPORT_PLAN_KEY, text);
         localStorage.removeItem(STORAGE_KEY);
         localStorage.removeItem(EVOLUTION_KEY);
-        infoEl.textContent = "Programme sport enregistré. Les anciennes séances sont effacées pour repartir proprement.";
+
+        infoEl.textContent = "Programme sport enregistré. Les anciennes séances sont effacées.";
         setTimeout(() => {
           location.reload();
         }, 1200);
@@ -1156,6 +1135,7 @@
         localStorage.removeItem(SPORT_PLAN_KEY);
         localStorage.removeItem(STORAGE_KEY);
         localStorage.removeItem(EVOLUTION_KEY);
+
         infoEl.textContent = "Programme sport remis par défaut. Les anciennes séances sont effacées.";
         setTimeout(() => {
           location.reload();
@@ -1164,17 +1144,19 @@
     }
 
     // =========================
-    // 6. Seed baseline (semaine 0)
+    // 6. Seed baseline
     // =========================
 
     function seedBaselineIfEmpty() {
       if (sessions.length > 0) return;
+
       const baseDate = new Date();
       baseDate.setDate(baseDate.getDate() - 8);
       const baseISO = baseDate.toISOString();
 
       exercises.forEach(ex => {
         if (!ex.track) return;
+
         const sess = {
           id: "baseline-" + ex.id,
           exerciseId: ex.id,
@@ -1186,19 +1168,22 @@
           actualWeight: ex.initialLoad != null ? ex.initialLoad : null,
           actualSeries: ex.initialSeries || ex.defaultSeries || null
         };
+
         sessions.push(sess);
       });
+
       saveSessions();
     }
 
     // =========================
-    // 7. Filtres séance / exo & affichage
+    // 7. Filtres et affichage sport
     // =========================
 
     function initFilters() {
       const sessionFilter = document.getElementById("sessionFilter");
       const exerciseSelect = document.getElementById("exerciseSelect");
       const blocks = getBlocks();
+
       sessionFilter.innerHTML = "";
 
       blocks.forEach(b => {
@@ -1229,13 +1214,16 @@
     function populateExerciseSelect(block) {
       const exerciseSelect = document.getElementById("exerciseSelect");
       exerciseSelect.innerHTML = "";
+
       const filtered = exercises.filter(e => e.block === block);
+
       filtered.forEach(ex => {
         const opt = document.createElement("option");
         opt.value = ex.id;
         opt.textContent = ex.name;
         exerciseSelect.appendChild(opt);
       });
+
       if (filtered.length) {
         currentExerciseId = filtered[0].id;
         exerciseSelect.value = currentExerciseId;
@@ -1280,12 +1268,12 @@
         updateChartForExercise(null);
         chartHintEl.textContent = "Cet exercice n'est pas tracké.";
         return;
-      } else {
-        nonTrackedNotice.style.display = "none";
-        trackedSection.style.display = "block";
-        nonTrackedInputsNotice.style.display = "none";
-        trackedInputs.style.display = "block";
       }
+
+      nonTrackedNotice.style.display = "none";
+      trackedSection.style.display = "block";
+      nonTrackedInputsNotice.style.display = "none";
+      trackedInputs.style.display = "block";
 
       const last = getLastSession(exId);
       const config = getEvolutionConfigFor(exId);
@@ -1299,6 +1287,7 @@
 
         const inc = config.increment != null ? config.increment : 2.5;
         let nextWeight = null;
+
         if (ex.unit === "Pdc") {
           nextWeight = null;
         } else if (lastWeight != null && typeof inc === "number") {
@@ -1311,7 +1300,7 @@
         lastWeightEl.textContent = "–";
         lastSeriesEl.textContent = ex.initialSeries || ex.defaultSeries || "-";
         targetWeightInput.value = ex.initialLoad != null ? String(ex.initialLoad).replace(".", ",") : "";
-        targetSeriesInput.value = (config.targetSeries || ex.initialSeries || ex.defaultSeries || "");
+        targetSeriesInput.value = config.targetSeries || ex.initialSeries || ex.defaultSeries || "";
       }
 
       actualWeightInput.value = "";
@@ -1321,7 +1310,7 @@
 
       const exSessions = getSessionsForExercise(exId);
       chartHintEl.textContent = exSessions.length
-        ? "Chaque point correspond à une séance (charge réelle si numérique, sinon charge cible)."
+        ? "Chaque point correspond à une séance avec charge numérique."
         : "Le graphe s'actualise dès qu'au moins une séance encodée existe.";
     }
 
@@ -1331,6 +1320,7 @@
 
     function updateChartForExercise(exId) {
       const ctx = document.getElementById("weightChart").getContext("2d");
+
       if (!exId) {
         if (chartInstance) {
           chartInstance.destroy();
@@ -1341,16 +1331,20 @@
 
       const ex = exercises.find(e => e.id === exId);
       const list = getSessionsForExercise(exId);
+
       const labels = [];
       const data = [];
 
       list.forEach(s => {
         const d = new Date(s.date);
         const label = d.toLocaleDateString("fr-BE", { day: "2-digit", month: "2-digit" });
+
         let val = s.actualWeight ?? s.targetWeight ?? null;
+
         if (ex.unit === "Pdc" || typeof val !== "number" || isNaN(val)) {
           val = null;
         }
+
         if (val != null) {
           labels.push(label);
           data.push(val);
@@ -1361,6 +1355,7 @@
         chartInstance.destroy();
         chartInstance = null;
       }
+
       if (!data.length) return;
 
       chartInstance = new Chart(ctx, {
@@ -1391,14 +1386,16 @@
             }
           },
           plugins: {
-            legend: { labels: { color: "#e5e7eb" } }
+            legend: {
+              labels: { color: "#e5e7eb" }
+            }
           }
         }
       });
     }
 
     // =========================
-    // 9. Sauvegarde de séance
+    // 9. Sauvegarde séance
     // =========================
 
     function setupSaveButton() {
@@ -1407,6 +1404,7 @@
 
       saveButton.addEventListener("click", () => {
         if (!currentExerciseId) return;
+
         const ex = exercises.find(e => e.id === currentExerciseId);
         if (!ex || !ex.track) return;
 
@@ -1435,17 +1433,20 @@
           actualWeight: isNaN(actualWeightNum) ? null : actualWeightNum,
           actualSeries
         };
+
         sessions.push(sess);
         saveSessions();
         loadExerciseDetail(currentExerciseId);
 
         infoMessageEl.textContent = "Séance enregistrée ✅";
-        setTimeout(() => { infoMessageEl.textContent = ""; }, 2500);
+        setTimeout(() => {
+          infoMessageEl.textContent = "";
+        }, 2500);
       });
     }
 
     // =========================
-    // 10. Résumé de la semaine
+    // 10. Résumé semaine
     // =========================
 
     function setupWeekSummaryButton() {
@@ -1457,6 +1458,7 @@
       button.addEventListener("click", () => {
         const now = new Date();
         const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
         const recent = sessions.filter(
           s => new Date(s.date) >= sevenDaysAgo &&
           !(typeof s.id === "string" && s.id.startsWith("baseline-"))
@@ -1490,14 +1492,18 @@
           const last = allForEx[allForEx.length - 1];
           const prev = allForEx.length >= 2 ? allForEx[allForEx.length - 2] : null;
 
-          const lastWeight = (typeof last.actualWeight === "number" && !isNaN(last.actualWeight))
+          const lastWeight = typeof last.actualWeight === "number" && !isNaN(last.actualWeight)
             ? last.actualWeight
-            : (typeof last.targetWeight === "number" && !isNaN(last.targetWeight) ? last.targetWeight : null);
+            : typeof last.targetWeight === "number" && !isNaN(last.targetWeight)
+              ? last.targetWeight
+              : null;
 
           const prevWeight = prev
-            ? ((typeof prev.actualWeight === "number" && !isNaN(prev.actualWeight))
-                ? prev.actualWeight
-                : (typeof prev.targetWeight === "number" && !isNaN(prev.targetWeight) ? prev.targetWeight : null))
+            ? typeof prev.actualWeight === "number" && !isNaN(prev.actualWeight)
+              ? prev.actualWeight
+              : typeof prev.targetWeight === "number" && !isNaN(prev.targetWeight)
+                ? prev.targetWeight
+                : null
             : null;
 
           let deltaText = "";
@@ -1525,8 +1531,7 @@
           info.textContent = "Aucun exercice tracké encodé sur les 7 derniers jours.";
           content.innerHTML = "";
         } else {
-          info.textContent =
-            "Résumé des 7 derniers jours sur les exercices trackés (charge réelle si dispo, sinon charge cible).";
+          info.textContent = "Résumé des 7 derniers jours sur les exercices trackés.";
           content.innerHTML =
             `<p style="margin:0 0 0.4rem;" class="muted">Sessions trackées : <strong>${totalSessions}</strong> · Exercices trackés : <strong>${totalExercises}</strong></p>` +
             html;
@@ -1538,7 +1543,7 @@
     }
 
     // =========================
-    // 11. Paramètres d’évolution
+    // 11. Paramètres évolution
     // =========================
 
     function setupEvolutionConfigSection() {
@@ -1551,6 +1556,7 @@
 
       const blocks = getBlocks();
       sessionSelect.innerHTML = "";
+
       blocks.forEach(block => {
         const opt = document.createElement("option");
         opt.value = block;
@@ -1560,13 +1566,16 @@
 
       function populate(block) {
         exerciseSelect.innerHTML = "";
+
         const filtered = exercises.filter(e => e.block === block && e.track);
+
         filtered.forEach(ex => {
           const opt = document.createElement("option");
           opt.value = ex.id;
           opt.textContent = ex.name;
           exerciseSelect.appendChild(opt);
         });
+
         if (filtered.length) {
           exerciseSelect.value = filtered[0].id;
           loadConfigForSelected();
@@ -1579,6 +1588,7 @@
       function loadConfigForSelected() {
         const exId = exerciseSelect.value;
         if (!exId) return;
+
         const conf = getEvolutionConfigFor(exId);
         incrementInput.value = conf.increment != null ? String(conf.increment).replace(".", ",") : "";
         targetSeriesInput.value = conf.targetSeries || "";
@@ -1591,15 +1601,21 @@
       saveButton.addEventListener("click", () => {
         const exId = exerciseSelect.value;
         if (!exId) return;
+
         const incVal = parseNumeric(incrementInput.value);
         const targetSeries = (targetSeriesInput.value || "").trim() || null;
+
         evolutionConfig[exId] = {
           increment: isNaN(incVal) ? null : incVal,
           targetSeries
         };
+
         saveEvolutionConfig();
+
         infoEl.textContent = "Paramètres enregistrés ✅";
-        setTimeout(() => { infoEl.textContent = ""; }, 2500);
+        setTimeout(() => {
+          infoEl.textContent = "";
+        }, 2500);
 
         if (exId === currentExerciseId) {
           loadExerciseDetail(exId);
@@ -1613,14 +1629,16 @@
     }
 
     // =========================
-    // 12. Visualiser ma séance (plan)
+    // 12. Visualiser séance
     // =========================
 
     function setupWorkoutPlanSection() {
       const sessionSelect = document.getElementById("planSessionFilter");
       const content = document.getElementById("planContent");
       const blocks = getBlocks();
+
       sessionSelect.innerHTML = "";
+
       blocks.forEach(block => {
         const opt = document.createElement("option");
         opt.value = block;
@@ -1629,6 +1647,7 @@
       });
 
       sessionSelect.addEventListener("change", () => renderWorkoutPlan(sessionSelect.value));
+
       if (blocks.length) {
         sessionSelect.value = blocks[0];
         renderWorkoutPlan(blocks[0]);
@@ -1640,15 +1659,19 @@
     function renderWorkoutPlan(block) {
       const content = document.getElementById("planContent");
       const exList = exercises.filter(e => e.block === block);
+
       if (!exList.length) {
         content.innerHTML = "<p class='muted'>Aucun exercice pour cette séance.</p>";
         return;
       }
+
       let html = "<ul class='summary-list'>";
+
       exList.forEach(ex => {
         const seriesPlan = ex.initialSeries || ex.defaultSeries || "-";
         const allSessions = getSessionsForExercise(ex.id);
         const last = allSessions.length ? allSessions[allSessions.length - 1] : null;
+
         let lastWeight = null;
         if (last) {
           if (typeof last.actualWeight === "number" && !isNaN(last.actualWeight)) {
@@ -1657,9 +1680,11 @@
             lastWeight = last.targetWeight;
           }
         }
+
         const conf = getEvolutionConfigFor(ex.id);
         const inc = conf.increment != null ? conf.increment : 2.5;
         let suggestedWeight = null;
+
         if (!ex.track) {
           suggestedWeight = null;
         } else if (ex.unit === "Pdc") {
@@ -1669,7 +1694,9 @@
         } else if (ex.initialLoad != null && typeof inc === "number") {
           suggestedWeight = ex.initialLoad + inc;
         }
-        const weightText = !ex.track ? "exercice non tracké" : formatValueWithUnit(suggestedWeight, ex);
+
+        const weightText = !ex.track ? "non tracké" : formatValueWithUnit(suggestedWeight, ex);
+
         html += `
           <li>
             <span><strong>${ex.name}</strong> · ${seriesPlan}</span>
@@ -1677,12 +1704,13 @@
           </li>
         `;
       });
+
       html += "</ul>";
       content.innerHTML = html;
     }
 
     // =========================
-    // 13. Nutrition : plan + états
+    // 13. Nutrition
     // =========================
 
     function loadNutritionPlan() {
@@ -1692,6 +1720,7 @@
           nutritionPlan = deepClone(DEFAULT_NUTRITION_PLAN);
           return;
         }
+
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length) {
           nutritionPlan = parsed;
@@ -1713,18 +1742,23 @@
     }
 
     function resetNutritionStateForToday() {
-      nutritionState = { date: getTodayStr(), checked: {} };
+      nutritionState = {
+        date: getTodayStr(),
+        checked: {}
+      };
       saveNutritionState();
     }
 
     function loadNutritionState() {
       const today = getTodayStr();
+
       try {
         const raw = localStorage.getItem(NUTRITION_STATE_KEY);
         if (!raw) {
           resetNutritionStateForToday();
           return;
         }
+
         const parsed = JSON.parse(raw);
         if (parsed && parsed.date === today && parsed.checked) {
           nutritionState = parsed;
@@ -1743,10 +1777,13 @@
     function renderNutritionTable() {
       const tbody = document.getElementById("nutritionTableBody");
       if (!tbody) return;
+
       tbody.innerHTML = "";
+
       nutritionPlan.forEach((item, index) => {
         const id = item.id || ("n-" + index);
         item.id = id;
+
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${item.time}</td>
@@ -1763,6 +1800,7 @@
       tbody.querySelectorAll(".nutrition-checkbox").forEach(cb => {
         const id = cb.dataset.itemId;
         cb.checked = !!(nutritionState.checked && nutritionState.checked[id]);
+
         cb.addEventListener("change", () => {
           if (!nutritionState.checked) nutritionState.checked = {};
           nutritionState.checked[id] = cb.checked;
@@ -1776,10 +1814,12 @@
     function updateNutritionTotalKcal() {
       const el = document.getElementById("nutritionTotalKcalText");
       if (!el) return;
+
       const total = nutritionPlan.reduce((sum, it) => {
         const n = typeof it.kcal === "number" ? it.kcal : parseFloat(it.kcal);
         return sum + (isNaN(n) ? 0 : n);
       }, 0);
+
       el.textContent = `Apport théorique : ${total} kcal`;
     }
 
@@ -1792,19 +1832,30 @@
     function parseNutritionPlanFromEditor(text) {
       const lines = text.split("\n");
       const res = [];
+
       lines.forEach((line, idx) => {
         const raw = line.trim();
         if (!raw || raw.startsWith("#")) return;
+
         const parts = raw.split(";");
         if (parts.length < 3) return;
+
         const time = parts[0].trim();
         const element = parts[1].trim();
         const detail = parts[2].trim();
         const kcalRaw = (parts[3] || "").trim();
         const kcalNum = parseFloat(kcalRaw.replace(",", "."));
         const kcal = isNaN(kcalNum) ? null : kcalNum;
-        res.push({ id: "n-" + idx, time, element, detail, kcal });
+
+        res.push({
+          id: "n-" + idx,
+          time,
+          element,
+          detail,
+          kcal
+        });
       });
+
       return res;
     }
 
@@ -1824,6 +1875,7 @@
 
       toggleBtn.addEventListener("click", () => {
         const isHidden = editor.style.display === "none" || editor.style.display === "";
+
         if (isHidden) {
           refreshTextarea();
           editor.style.display = "block";
@@ -1836,16 +1888,21 @@
       saveBtn.addEventListener("click", () => {
         const text = textarea.value || "";
         const parsed = parseNutritionPlanFromEditor(text);
+
         if (!parsed.length) {
-          infoEl.textContent = "Format incorrect : au moins 3 colonnes par ligne (Heure;Élément;Détail;KCAL).";
+          infoEl.textContent = "Format incorrect : au moins 3 colonnes par ligne.";
           return;
         }
+
         nutritionPlan = parsed;
         saveNutritionPlan();
         resetNutritionStateForToday();
         renderNutritionTable();
-        infoEl.textContent = "Programme nutrition enregistré ✅ (cases remises à zéro pour aujourd'hui).";
-        setTimeout(() => { infoEl.textContent = ""; }, 2500);
+
+        infoEl.textContent = "Programme nutrition enregistré ✅";
+        setTimeout(() => {
+          infoEl.textContent = "";
+        }, 2500);
       });
 
       resetBtn.addEventListener("click", () => {
@@ -1853,8 +1910,11 @@
         saveNutritionPlan();
         resetNutritionStateForToday();
         renderNutritionTable();
-        infoEl.textContent = "Programme nutrition remis par défaut ✅.";
-        setTimeout(() => { infoEl.textContent = ""; }, 2500);
+
+        infoEl.textContent = "Programme nutrition remis par défaut ✅";
+        setTimeout(() => {
+          infoEl.textContent = "";
+        }, 2500);
       });
     }
 
@@ -1872,6 +1932,7 @@
     function setMode(mode) {
       const sportView = document.getElementById("sportView");
       const nutritionView = document.getElementById("nutritionView");
+
       if (!sportView || !nutritionView) return;
 
       if (mode === "nutrition") {
@@ -1918,6 +1979,7 @@
 
       setupModeSwitch();
       initNutritionSection();
+
       setMode("sport");
     }
 
